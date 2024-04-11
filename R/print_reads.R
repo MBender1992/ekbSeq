@@ -10,8 +10,8 @@
 #' @export
 
 print_reads <- function(readsRaw, readsFiltered, minimumCount = 10, smallestGroupSize){
-  nreads <- as.data.frame(rbind(formatC(readsRaw, format = "e", digits = 3), 
-                                formatC(readsFiltered, format = "e", digits = 3)))
+  nreads <- as.data.frame(rbind(formatC(readsRaw, format = "e", digits = 2), 
+                                formatC(readsFiltered, format = "e", digits = 2)))
   rownames <- c("Number of reads (total)", "Number of reads (filtered)")
   
   # transform into ngsekb function

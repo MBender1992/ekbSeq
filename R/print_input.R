@@ -14,8 +14,6 @@
 #' @param contrast design formula as specified to obtain the DESeq object.
 #' @export
 
-
-
 print_input <- function(SummarizedExp, DESeqObj, pThres = 0.05, lfcThres = 1, minimumCount = 10, 
                         smallestGroupSize, contrast){
   
@@ -43,23 +41,3 @@ print_input <- function(SummarizedExp, DESeqObj, pThres = 0.05, lfcThres = 1, mi
   
   emR::FitFlextableToPage(ft)
 }
-
-
-
-print_input <- function(SummarizedExp, DESeqObj, pThres = 0.05, lfcThres = 1, minimumCount = 10, 
-                        smallestGroupSize, contrast){
-  
-  data.frame(Thresholds = "", pThres, lfcThres, minimumCount, smallestGroupSize, formula = paste(as.character(contrast), collapse = ""),
-             Transcripts = "", n_total = nrow(SummarizedExperiment::assay(SummarizedExp)), n_expr = nrow(SummarizedExperiment::assay(DESeqObj))) %>%
-    tidyr::gather("rownames", "value") %>%
-    dplyr::mutate(rownames = factor(rownames, levels = c("Thresholds", "pThres", "lfcThres", "minimumCount",
-                                                         "smallestGroupSize",  "formula", "Transcripts", "n_total", "n_expr"), labels = c("Thresholds", "P-value", "Log-fold change", "Minimum read count", "Smallest group size",                             "Design Formula", "Transcript number",  "Total number of transcripts",
-                                                                                                                                          "Filtered number of transcripts"))) %>%
-    setNames(c("", "Value")) %>%
-    kable()%>% 
-    kable_styling("striped") %>% scroll_box(width = "100%")
-}
-
-# transform into ngsekb function
-print_input(SummarizedExp = se, DESeqObj = dds, pThres = pThres, lfcThres = lfcThres, minimumCount = minimumCount,
-            smallestGroupSize = smallestGroupSize, contrast = contrast)
