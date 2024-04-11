@@ -1,0 +1,28 @@
+Package: ekbSeq
+Title: Collection of functions to facilitate NGS analyses
+Version: 0.0.2
+Authors@R: 
+    person(given = "Marc",
+           family = "Bender",
+           role = c("aut", "cre"),
+           email = "mbender1992@web.de")
+Description: Inclusion of functions to facilitate the analysis of next generation sequencing data with the DESeq2 pipeline.
+Depends: 
+    R(>= 4.0.0)
+biocViews:
+Imports:
+	dplyr,
+        emR,
+        flextable,
+        magrittr,
+	stats,
+        SummarizedExperiment,
+        tidyr,
+        tidyverse
+Remotes: 
+	MBender1992/emR
+License: file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.0
