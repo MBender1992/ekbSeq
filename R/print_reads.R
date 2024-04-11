@@ -25,7 +25,7 @@ print_reads <- function(readsRaw, readsFiltered, minimumCount = 10, smallestGrou
                         ),
                         ref_symbols = c("\u2020"),
                         part = "body") %>%
-    fontsize(size = 9, part = "all") %>%
+    fontsize(size = 8, part = "all") %>%
     theme_zebra()
   
   emR::FitFlextableToPage(ft)
