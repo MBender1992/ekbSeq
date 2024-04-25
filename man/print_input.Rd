@@ -11,7 +11,8 @@ print_input(
   lfcThres = 1,
   minimumCount = 10,
   smallestGroupSize,
-  contrast
+  contrast,
+  fontSize = 9
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ in at least 3 samples.}
 \item{smallestGroupSize}{sample size of the smallest group. For more details see argument minimumCount.}
 
 \item{contrast}{design formula as specified to obtain the DESeq object.}
+
+\item{fontSize}{size of table font.}
 }
 \description{
 Output is a flextable object with prespecified styling. Needs a SummarizedExperiment object and a DESeq Object as well

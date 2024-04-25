@@ -4,7 +4,13 @@
 \alias{print_reads}
 \title{Function to print reads per sample}
 \usage{
-print_reads(readsRaw, readsFiltered, minimumCount = 10, smallestGroupSize)
+print_reads(
+  readsRaw,
+  readsFiltered,
+  minimumCount = 10,
+  smallestGroupSize,
+  fontSize = 8
+)
 }
 \arguments{
 \item{readsRaw}{named vector including the total number of reads per sample.}
@@ -16,6 +22,8 @@ argument. For example a minimumCount = 10 and smallestGroupSize = 3 would elimin
 in at least 3 samples.}
 
 \item{smallestGroupSize}{sample size of the smallest group. For more details see argument minimumCount.}
+
+\item{fontSize}{size of table font.}
 }
 \description{
 Output is a flextable object with prespecified styling.

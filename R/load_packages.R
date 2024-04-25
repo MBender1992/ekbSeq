@@ -1,7 +1,8 @@
 #' @import tidyverse
 #' @import magrittr
 #' @import flextable
-#' @importFrom stats as.formula 
+#' @import ggplot2
+#' @importFrom stats as.formula
 #' @importFrom utils write.csv
 NULL
 
