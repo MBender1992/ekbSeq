@@ -4,16 +4,22 @@
 \alias{save_res}
 \title{Save workspace and significant results table from NGS analysis}
 \usage{
-save_res(save = TRUE, results = NULL, path = NULL, file.name, rm.batch = NULL)
+save_res(
+  save = TRUE,
+  results = NULL,
+  results.name = NULL,
+  rdata.name,
+  rm.batch = NULL
+)
 }
 \arguments{
 \item{save}{logical indicating whether workspace and significant results table should be saved. Default is TRUE.}
 
 \item{results}{data.frame containing results with differentially expressed genes.}
 
-\item{path}{path where data should be saved. Must end with "<\if{html}{\out{<filename>}}>.csv".}
+\item{results.name}{name of csv file where differential expression results are stored.}
 
-\item{file.name}{name of the exported csv and rdata file.}
+\item{rdata.name}{name of the exported rdata file.}
 
 \item{rm.batch}{second factor of a design formula. If present the batch effect introduced by this covariate is removed and the corresponding
 files are saved with the suffix "adjusted".}
