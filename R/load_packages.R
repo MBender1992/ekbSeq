@@ -1,4 +1,3 @@
-#' @import tidyverse
 #' @import magrittr
 #' @import flextable
 #' @import ggplot2

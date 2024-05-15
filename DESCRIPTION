@@ -18,9 +18,10 @@ Imports:
 	ggplot2, 
 	ggsci,
         magrittr,
+        readr,
 	stats,
-        tidyr,
-        tidyverse
+        SummarizedExperiment,
+        tidyr
 Remotes: 
 	MBender1992/emR
 License: file LICENSE

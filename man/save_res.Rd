@@ -2,11 +2,12 @@
 % Please edit documentation in R/save_res.R
 \name{save_res}
 \alias{save_res}
-\title{Save workspace and significant results table from NGS analysis}
+\title{Save workspace and significant sig.res table from NGS analysis}
 \usage{
 save_res(
   save = TRUE,
-  results = NULL,
+  all.res = NULL,
+  sig.res = NULL,
   results.name = NULL,
   rdata.name,
   rm.batch = NULL
@@ -15,7 +16,9 @@ save_res(
 \arguments{
 \item{save}{logical indicating whether workspace and significant results table should be saved. Default is TRUE.}
 
-\item{results}{data.frame containing results with differentially expressed genes.}
+\item{all.res}{data.frame containing results with expression data.}
+
+\item{sig.res}{data.frame containing results with differentially expressed genes.}
 
 \item{results.name}{name of csv file where differential expression results are stored.}
 
@@ -25,5 +28,5 @@ save_res(
 files are saved with the suffix "adjusted".}
 }
 \description{
-Save workspace and significant results table from NGS analysis
+Save workspace and significant sig.res table from NGS analysis
 }
