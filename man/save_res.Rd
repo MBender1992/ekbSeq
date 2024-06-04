@@ -8,6 +8,7 @@ save_res(
   save = TRUE,
   all.res = NULL,
   sig.res = NULL,
+  pathway.res = NULL,
   results.name = NULL,
   rdata.name,
   rm.batch = NULL
@@ -19,6 +20,8 @@ save_res(
 \item{all.res}{data.frame containing results with expression data.}
 
 \item{sig.res}{data.frame containing results with differentially expressed genes.}
+
+\item{pathway.res}{data.frame containing results of pathfindR using wiki pathways.}
 
 \item{results.name}{name of csv file where differential expression results are stored.}
 

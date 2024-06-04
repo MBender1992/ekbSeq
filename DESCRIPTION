@@ -10,7 +10,7 @@ Description: Inclusion of functions to facilitate the analysis of next generatio
 Depends: 
     R(>= 4.0.0)
 biocViews:
-	SummarizedExperiment
+	SummarizedExperiment        
 Imports:
 	dplyr,
         emR,
@@ -19,9 +19,12 @@ Imports:
 	ggsci,
         magrittr,
         readr,
+	S4Vectors,
 	stats,
+	stringr,
         SummarizedExperiment,
-        tidyr
+        tidyr, 
+	writexl
 Remotes: 
 	MBender1992/emR
 License: file LICENSE
