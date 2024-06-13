@@ -1,6 +1,6 @@
 Package: ekbSeq
 Title: Collection of functions to facilitate NGS analyses
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: 
     person(given = "Marc",
            family = "Bender",
@@ -10,6 +10,8 @@ Description: Inclusion of functions to facilitate the analysis of next generatio
 Depends: 
     R(>= 4.0.0)
 biocViews:
+	goseq,
+        rrvgo,
 	SummarizedExperiment        
 Imports:
 	dplyr,
@@ -17,8 +19,10 @@ Imports:
         flextable,
 	ggplot2, 
 	ggsci,
+        goseq,
         magrittr,
         readr,
+  	rrvgo,
 	S4Vectors,
 	stats,
 	stringr,
