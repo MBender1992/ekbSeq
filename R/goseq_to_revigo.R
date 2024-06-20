@@ -15,13 +15,11 @@ goseq_to_revigo <- function(gene.list, genome, identifier = "ensGene", ont = "BP
   goseqOnt <- paste("GO:", ont, sep = "")
   pwf <- nullp(gene.list, genome, identifier)
   goResults <- goseq(pwf, genome, identifier, test.cats = c(goseqOnt))
-  goResults <- goResults[goResults$over_represented_pvalue < pval.thres, ]
-
+  goResults$padj <- rstatix::adjust_pvalue(goResults$over_represented_pvalue, method = "fdr")
+  goResults <- goResults[goResults$padj < pval.thres, ]
   simMatrix <- calculateSimMatrix(goResults$category, orgdb = "org.Hs.eg.db", ont = ont, method = "Rel")
-  scores <- stats::setNames(-log10(goResults$over_represented_pvalue), goResults$category)
+  scores <- stats::setNames(-log10(goResults$padj), goResults$category)
   res <- reduceSimMatrix(simMatrix, scores, threshold = sim.thres, orgdb = "org.Hs.eg.db")
   res[res$go == res$parent, ]
 }
-
-
 

@@ -4,13 +4,14 @@
 #' @param all.res data.frame containing results with expression data.
 #' @param sig.res data.frame containing results with differentially expressed genes.
 #' @param pathway.res data.frame containing results of pathfindR using wiki pathways.
+#' @param background.gene.list gene list used as background for functional analyses based on the publication of Wijesooriya et al. (2022).
 #' @param results.name name of csv file where differential expression results are stored.
 #' @param rdata.name name of the exported rdata file.
 #' @param rm.batch second factor of a design formula. If present the batch effect introduced by this covariate is removed and the corresponding
 #' files are saved with the suffix "adjusted".
 #' @export
 
-save_res <- function(save = TRUE, all.res = NULL, sig.res = NULL, pathway.res = NULL,
+save_res <- function(save = TRUE, all.res = NULL, background.gene.list = NULL, sig.res = NULL, pathway.res = NULL,
                      results.name = NULL, rdata.name, rm.batch = NULL) {
   if (save == TRUE) {
     warning("The current DSC_NGS file has been overwritten. Please check carefully if results are still valid.")
@@ -54,6 +55,13 @@ save_res <- function(save = TRUE, all.res = NULL, sig.res = NULL, pathway.res = 
     ## if else statement 4 (save enriched wikipathways)
     if (!is.null(results.name) & !is.null(pathway.res)) {
       writexl::write_xlsx(pathway.res, paste(results.name, "_enriched_wikiPW.xlsx", sep = ""))
+    } else {
+      warning("No pathway analysis or path has been provided. Pathway table will not be saved.")
+    }
+
+    ## if else statement 5 (save background gene list)
+    if (!is.null(results.name) & !is.null(background.gene.list)) {
+      writexl::write_xlsx(background.gene.list, paste(results.name, "_background_gene_list.xlsx", sep = ""))
     } else {
       warning("No pathway analysis or path has been provided. Pathway table will not be saved.")
     }

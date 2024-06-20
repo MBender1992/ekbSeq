@@ -7,6 +7,7 @@
 save_res(
   save = TRUE,
   all.res = NULL,
+  background.gene.list = NULL,
   sig.res = NULL,
   pathway.res = NULL,
   results.name = NULL,
@@ -18,6 +19,8 @@ save_res(
 \item{save}{logical indicating whether workspace and significant results table should be saved. Default is TRUE.}
 
 \item{all.res}{data.frame containing results with expression data.}
+
+\item{background.gene.list}{gene list used as background for functional analyses based on the publication of Wijesooriya et al. (2022).}
 
 \item{sig.res}{data.frame containing results with differentially expressed genes.}
 

@@ -1,6 +1,6 @@
 Package: ekbSeq
 Title: Collection of functions to facilitate NGS analyses
-Version: 0.0.3
+Version: 0.0.4
 Authors@R: 
     person(given = "Marc",
            family = "Bender",
@@ -23,6 +23,7 @@ Imports:
         magrittr,
         readr,
   	rrvgo,
+	rstatix,
 	S4Vectors,
 	stats,
 	stringr,
