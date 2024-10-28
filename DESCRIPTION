@@ -10,11 +10,13 @@ Description: Inclusion of functions to facilitate the analysis of next generatio
 Depends: 
     R(>= 4.0.0)
 biocViews:
+	DESeq2,
 	goseq,
         rrvgo,
 	SummarizedExperiment        
 Imports:
 	dplyr,
+	DESeq2,
         emR,
         flextable,
 	ggplot2, 

@@ -4,9 +4,9 @@
 #' @import stringr
 #' @import rrvgo
 #' @import goseq
+#' @import SummarizedExperiment
 #' @importFrom stats as.formula
 #' @importFrom utils write.csv
-#' @importFrom SummarizedExperiment assay
 NULL
 
 

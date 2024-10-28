@@ -6,19 +6,24 @@
 \usage{
 pca_plot(
   data,
-  percentVar,
-  type,
+  pcsToUse,
+  title = "",
+  subtitle = "",
+  type = "VST",
   pointSize = 3,
   textSize = 12,
   labelled = FALSE,
-  fct1,
-  fct2 = NULL
+  intgroup
 )
 }
 \arguments{
 \item{data}{Transformed count matrix.}
 
-\item{percentVar}{Explained variance by PC1 and PC2}
+\item{pcsToUse}{numeric of length 2, which PCs to plot}
+
+\item{title}{plot title.}
+
+\item{subtitle}{plot subtitle.}
 
 \item{type}{Specify type of transformation which was used for generation of count matrix.}
 
@@ -28,9 +33,8 @@ pca_plot(
 
 \item{labelled}{logical indicating whether points or text labels should be plotted. Default is FALSE to plot points.}
 
-\item{fct1}{main factor of interest in the design formula}
-
-\item{fct2}{covariate which is adjusted for if included in the design formula}
+\item{intgroup}{interesting groups: a character vector of
+names in \code{colData(x)} to use for grouping}
 }
 \description{
 Output is a ggplot object showing PC1 and PC2 for a RNASeq experiment. For a 1 factor design, points are colored by this group,
