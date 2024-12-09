@@ -10,19 +10,25 @@ Description: Inclusion of functions to facilitate the analysis of next generatio
 Depends: 
     R(>= 4.0.0)
 biocViews:
+	clusterProfiler,
 	DESeq2,
+	enrichplot,
 	goseq,
         rrvgo,
+	org.Hs.eg.db,
 	SummarizedExperiment        
 Imports:
+	clusterProfiler,
 	dplyr,
 	DESeq2,
         emR,
+	enrichplot,
         flextable,
 	ggplot2, 
 	ggsci,
         goseq,
         magrittr,
+	org.Hs.eg.db,
         readr,
   	rrvgo,
 	rstatix,
@@ -38,4 +44,4 @@ License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2

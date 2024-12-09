@@ -38,3 +38,4 @@ contraster <- function(dds, group1, group2, weighted = F){
   }
   return(colMeans(mod_mat1)-colMeans(mod_mat2))
 }
+
