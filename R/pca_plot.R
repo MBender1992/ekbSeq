@@ -21,7 +21,7 @@ pca_plot <- function(data, pcsToUse, title = "", subtitle = "",  type = "VST", p
     labs(title = title, subtitle = subtitle) +
     xlab(paste0("PC", pcsToUse[1], ": ", percentVar[1], "% variance")) +
     ylab(paste0("PC", pcsToUse[2],": ", percentVar[2], "% variance")) +
-    #ggtitle(title) +
+    ggtitle(title) + # remove if function throws error
     theme_bw(base_size = textSize) +
     ggsci::scale_color_npg()
   if(labelled == TRUE) p + geom_label(aes(label = name)) else p
