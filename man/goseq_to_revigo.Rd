@@ -2,7 +2,7 @@
 % Please edit documentation in R/goseq_to_revigo.R
 \name{goseq_to_revigo}
 \alias{goseq_to_revigo}
-\title{Perform goseq analysis and reduce terms based on similarity threshold}
+\title{GO Enrichment and Redundancy Reduction Using goseq and rrvgo}
 \usage{
 goseq_to_revigo(
   gene.list,
@@ -14,20 +14,40 @@ goseq_to_revigo(
 )
 }
 \arguments{
-\item{gene.list}{named gene list containing 1 (gene of interest) or 0 (other gene). Names can be either Ensemble IDs
-or ENTREZ IDs. Based on the name the identifier has to be set to either "ensGene" or "knownGene" for Ensemble and Entrez IDs, respectively.}
+\item{gene.list}{Named numeric vector of 0s and 1s, indicating genes of interest (1) and background genes (0).
+Names should correspond to gene IDs, either Ensembl or Entrez, depending on the \code{identifier} used.}
 
-\item{genome}{reference genome. For further details see \code{goseq} function \code{\link[=nullp]{nullp()}}.}
+\item{genome}{Character string specifying the reference genome (e.g., \code{"hg38"}). Passed to \code{nullp} and \code{goseq}.}
 
-\item{identifier}{gene identifier as specified in gene.list.}
+\item{identifier}{Character string. Gene ID format: \code{"ensGene"} for Ensembl or \code{"knownGene"} for Entrez IDs.}
 
-\item{ont}{GO ontology. Either "BP" for "biological process", "MF" for "molecular function" or "CC" for cellular compartment. Default is "BP".}
+\item{ont}{Character string specifying the GO ontology. One of \code{"BP"} (Biological Process), \code{"MF"} (Molecular Function), or \code{"CC"} (Cellular Component). Default is \code{"BP"}.}
 
-\item{sim.thres}{similarity threshold passed on to the \code{rrvgo} function \code{\link[=reduceSimMatrix]{reduceSimMatrix()}}.}
+\item{sim.thres}{Numeric. Similarity threshold used by \code{rrvgo::reduceSimMatrix()}. Default is \code{0.7}.}
 
-\item{pval.thres}{threshold to filter enriched pathways.}
+\item{pval.thres}{Numeric. Adjusted p-value threshold for filtering enriched GO terms. Default is \code{0.05}.}
+}
+\value{
+A data frame containing non-redundant representative GO terms after enrichment and similarity reduction.
 }
 \description{
-This function takes a named gene list with Gene IDs as names and 1 or 0 for significantly or unchanged genes, respectively, as input.
-It is possible to analyze any gene set by assigning 1 to the genes of interest and 0 for other genes.
+This function performs Gene Ontology (GO) enrichment analysis using the \code{goseq} package and reduces the resulting terms
+based on semantic similarity using \code{rrvgo}. It is useful for highlighting the most representative GO terms among significantly enriched results.
+}
+\details{
+This function:
+\enumerate{
+\item Performs GO enrichment using \code{goseq()}.
+\item Adjusts p-values using FDR.
+\item Filters results below a p-value threshold.
+\item Computes a semantic similarity matrix via \code{rrvgo::calculateSimMatrix()}.
+\item Reduces the matrix using \code{rrvgo::reduceSimMatrix()} to retain only representative GO terms.
+}
+}
+\examples{
+\dontrun{
+gene_list <- c(GeneA = 1, GeneB = 0, GeneC = 1, GeneD = 0)
+goseq_to_revigo(gene.list = gene_list, genome = "hg38", identifier = "ensGene")
+}
+
 }
