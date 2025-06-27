@@ -10,6 +10,8 @@ pca_plot(
   title = "",
   subtitle = "",
   type = "VST",
+  colors = NULL,
+  shapes = NULL,
   pointSize = 3,
   textSize = 12,
   labelled = FALSE,
@@ -26,6 +28,10 @@ pca_plot(
 \item{subtitle}{plot subtitle.}
 
 \item{type}{Specify type of transformation which was used for generation of count matrix.}
+
+\item{colors}{character vector with colors used in scale_color_manual. Default is npg colors from ggsci package.}
+
+\item{shapes}{character vector with shapes. Default are ggplot shapes if no shapes are supplied.}
 
 \item{pointSize}{Size of points.}
 

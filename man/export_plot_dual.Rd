@@ -2,26 +2,56 @@
 % Please edit documentation in R/export_plot_dual.R
 \name{export_plot_dual}
 \alias{export_plot_dual}
-\title{Export a Plot to Both PNG and SVG Formats}
+\title{Save a Plot as PNG and SVG Files Simultaneously}
 \usage{
-export_plot_dual(filename_base, plot_expr, width = 8, height = 6, dpi = 600)
+export_plot_dual(
+  filename_base,
+  plot_expr = NULL,
+  width = 8,
+  height = 6,
+  dpi = 600
+)
 }
 \arguments{
-\item{filename_base}{Character. Base filename (without extension) for the output files.}
+\item{filename_base}{Character. Base file path (without extension) where the plots will be saved.}
 
-\item{plot_expr}{Expression. A quoted plotting expression, passed using \code{quote({ ... })}.}
+\item{plot_expr}{A plot object, function, or expression to be saved.
+\itemize{
+\item If a ggplot object (class \code{"gg"}, \code{"ggplot"}, or \code{"ggarrange"}), it is saved via \code{ggsave()}.
+\item If a function or quoted expression, it is evaluated inside \code{png()} and \code{svg()} devices for base R plots.
+}}
 
-\item{width}{Integer. Width of the images in inches Default is 8}
+\item{width}{Numeric. Width of the plot in inches. Default is 8.}
 
-\item{height}{Integer. Height of the images in inches Default is 6}
+\item{height}{Numeric. Height of the plot in inches. Default is 6.}
 
-\item{dpi}{Integer. Resolution (dots per inch) for the PNG. Default is 96.}
+\item{dpi}{Numeric. Resolution (dots per inch) for PNG output. Default is 600.}
 }
 \value{
-Saves two files: \code{name.png} and \code{name.svg} in the working directory. Invisibly returns \code{NULL}.
+Invisibly returns \code{NULL}.
 }
 \description{
-Saves a given plot expression as both a PNG and an SVG file using base R graphics devices.
-This is useful for workflows where vector (SVG) and raster (PNG) outputs are both needed
-for presentations, publications, or web use.
+This function saves a plot in both PNG and SVG formats using either \code{ggsave()} for \strong{ggplot2} objects or base R graphics devices for base plotting expressions or functions.
+}
+\details{
+If a \strong{ggplot} object or compatible plot object (e.g., \code{ggarrange}) is provided, it uses \code{ggsave()} to save the plot.
+For base R plots, you can pass either a plotting expression (quoted) or a plotting function which will be evaluated inside the device context.
+
+The function automatically adds \code{.png} and \code{.svg} extensions to \code{filename_base} and saves the plot in both formats.
+For \strong{ggplot2} objects, \code{ggsave()} is used for both formats with appropriate arguments.
+For base plotting, the plot is drawn inside \code{png()} and \code{svg()} graphic devices using the provided expression or function.
+}
+\examples{
+\dontrun{
+library(ggplot2)
+p <- ggplot(mtcars, aes(mpg, wt)) + geom_point()
+export_plot_dual2("my_ggplot", p)
+
+# Using a base plot as a function
+export_plot_dual2("my_baseplot", function() plot(mtcars$mpg, mtcars$wt))
+
+# Using a base plot as an expression
+export_plot_dual2("my_baseplot_expr", quote(plot(mtcars$mpg, mtcars$wt)))
+}
+
 }

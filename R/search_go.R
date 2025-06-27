@@ -8,9 +8,12 @@
 #' @param all.res Annotated results of DESeq analysis containing (at least) p.value, gene ID, gene name and logFoldChange
 #' @param path Path were results should be stored. Can be an absolute path or relative path based on the working directory.
 #' @param search.string Logical indicating whether colors distribution should be symmetrical. Default is FALSE.
+#' @param fig.height Figure height (in inches).
+#' @param fig.width Figure width (in inches).
+#' @param flip.coords Logical indicating whether x-y coordinates should be flipped. Default is TRUE.
 #' @export
 
-search_go <- function(enrich.res, all.res, path = getwd(), search.string = " "){
+search_go <- function(enrich.res, all.res, path = getwd(), search.string = " ", fig.width = 7, fig.height = 16, flip.coords = TRUE){
   ind <- str_detect(enrich.res$Description, search.string)
   search.string <- str_replace_all(search.string, "\\|", "_")
   tbl <- enrich.res[ind,]
@@ -19,7 +22,7 @@ search_go <- function(enrich.res, all.res, path = getwd(), search.string = " "){
 
   ## write results into table
   tbl %>%
-    select(c("Rank", "ID", "Description", "zScore", "p.adjust", "geneID", "Count")) %>%
+    dplyr::select(c("Rank", "ID", "Description", "zScore", "p.adjust", "geneID", "Count")) %>%
     stats::setNames(c("Rank", "ID", "Description", "Z-score", "Adjusted P-value", "Genes", "Count")) %>%
     write.csv(paste0(path, "/selected_go_terms_", search.string, ".csv"))
 
@@ -28,12 +31,15 @@ search_go <- function(enrich.res, all.res, path = getwd(), search.string = " "){
   all.res$SYMBOL <- factor(all.res$SYMBOL)
   all.res$SYMBOL <- fct_reorder(all.res$SYMBOL, all.res$log2FoldChange)
   p <- ggbarplot(all.res, x= "SYMBOL", y = "log2FoldChange", fill = "log2FoldChange") +
-    coord_flip() +
     scale_fill_viridis_c() +
     scale_y_continuous(expand = c(0,0)) +
     ylab("")
 
-  svg(paste0(path, "/selected_go_terms_", search.string, ".svg"), width=7, height=16)
+  if(flip.coords == TRUE){
+    p <- p + coord_flip()
+  }
+
+  svg(paste0(path, "/selected_go_terms_", search.string, ".svg"), width=fig.width, height=fig.height)
   print(p)
   dev.off()
 }

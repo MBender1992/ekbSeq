@@ -60,3 +60,5 @@ plot_go <- function(genes, showCategory = 20, sim.thres = 0.7, sym.colors = FALS
     list(enrich_go = ck, reduced_go = reducedTerms)
   }
 }
+
+

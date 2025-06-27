@@ -1,6 +1,6 @@
 Package: ekbSeq
 Title: Collection of functions to facilitate NGS analyses
-Version: 0.1.1
+Version: 0.2.0
 Authors@R: 
     person(given = "Marc",
            family = "Bender",
@@ -19,8 +19,10 @@ biocViews:
 	SummarizedExperiment        
 Imports:
 	clusterProfiler,
+	dplyr,
 	DESeq2,
        	enrichplot,
+	EnhancedVolcano,
         flextable, 
         forcats,
 	ggplot2,
@@ -32,6 +34,7 @@ Imports:
 	org.Hs.eg.db,
         rrvgo,
 	rstatix,
+	openxlsx,
 	scales,
 	S4Vectors,
 	stats,

@@ -6,14 +6,13 @@
 #' @param gene.list List containing ENTREZ IDs of enriched genes. List should be generated with the list_signif_genes() function from the ekbSeq package.
 #' @param pvalueCutoff adjusted pvalue cutoff on enrichment tests to report
 #' @param sim.thres similarity threshold (0-1). Some guidance: Large (allowed similarity=0.9), Medium (0.7), Small (0.5), Tiny (0.4) Defaults to Medium (0.7)
-#' @param path Path were results should be stored. Can be an absolute path or relative path based on the working directory.
 #' @param sym.colors Logical indicating whether colors distribution should be symmetrical. Default is FALSE.
 #' @param font.size Font size.
 #' @param return.res Logical indicating whether results should be returned. If TRUE original enrichGO results and reduced terms will be stored as list object.
 #' @param showCategory A number or a list of terms. If it is a number, the first n terms will be displayed. If it is a list of terms, the selected terms will be displayed.
 #' @export
 
-plot_go_clusters <- function(gene.list, showCategory = 5, sim.thres = 0.7, sym.colors = FALSE, return.res = FALSE,  font.size = 12, pvalueCutoff = 0.05, path){
+plot_go_clusters <- function(gene.list, showCategory = 5, sim.thres = 0.7, sym.colors = FALSE, return.res = FALSE,  font.size = 12, pvalueCutoff = 0.05){
   term <- NULL
 
   names <- str_remove(deparse(substitute(gene.list)), "ls_")
@@ -51,12 +50,14 @@ plot_go_clusters <- function(gene.list, showCategory = 5, sim.thres = 0.7, sym.c
   p_aux <- ggarrange(p_wc, p_bp, labels = c("A", "B"), ncol = 1)
   p <- ggarrange(p_aux, p_dp, labels = c("", "C"), ncol = 2, widths = c(1, 0.5))
   p <- annotate_figure(p, top = text_grob(paste0("Biological processes (n=", dim(unique(ck@compareClusterResult$ID))[1],") enriched in ", names, " genes"), face = "bold", size = 14))
-  svg(paste0(path, names, "_GOBP_wc.svg"), width=18, height=14)
-  print(p)
-  dev.off()
+  # svg(paste0(path, names, "_GOBP_wc.svg"), width=18, height=14)
+  # print(p)
+  # dev.off()
 
   if(return.res == TRUE){
-    list(enrich_go = ck, reduced_go = reducedTerms)
+    list(enrich_go = ck, reduced_go = reducedTerms, plot = p)
+  } else {
+    return(p)
   }
 }
 

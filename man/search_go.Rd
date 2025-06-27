@@ -4,7 +4,15 @@
 \alias{search_go}
 \title{Function to plot subset of go terms based on search string}
 \usage{
-search_go(enrich.res, all.res, path = getwd(), search.string = " ")
+search_go(
+  enrich.res,
+  all.res,
+  path = getwd(),
+  search.string = " ",
+  fig.width = 7,
+  fig.height = 16,
+  flip.coords = TRUE
+)
 }
 \arguments{
 \item{enrich.res}{Enrichment results generated with \link[clusterProfiler]{compareCluster} or \link[clusterProfiler]{enrichGO}}
@@ -14,6 +22,12 @@ search_go(enrich.res, all.res, path = getwd(), search.string = " ")
 \item{path}{Path were results should be stored. Can be an absolute path or relative path based on the working directory.}
 
 \item{search.string}{Logical indicating whether colors distribution should be symmetrical. Default is FALSE.}
+
+\item{fig.width}{Figure width (in inches).}
+
+\item{fig.height}{Figure height (in inches).}
+
+\item{flip.coords}{Logical indicating whether x-y coordinates should be flipped. Default is TRUE.}
 }
 \description{
 This function uses results of \link[clusterProfiler]{compareCluster} or \link[clusterProfiler]{enrichGO} as input to search for go terms of interest

@@ -11,8 +11,7 @@ plot_go_clusters(
   sym.colors = FALSE,
   return.res = FALSE,
   font.size = 12,
-  pvalueCutoff = 0.05,
-  path
+  pvalueCutoff = 0.05
 )
 }
 \arguments{
@@ -29,8 +28,6 @@ plot_go_clusters(
 \item{font.size}{Font size.}
 
 \item{pvalueCutoff}{adjusted pvalue cutoff on enrichment tests to report}
-
-\item{path}{Path were results should be stored. Can be an absolute path or relative path based on the working directory.}
 }
 \description{
 This function uses a gene list of ENTREZ IDs as input for clusterProfiler's function \link[clusterProfiler]{compareCluster} with the parameters \emph{fun = enrichGO},
