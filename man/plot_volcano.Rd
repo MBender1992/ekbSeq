@@ -14,7 +14,8 @@ plot_volcano(
   ylim = NULL,
   show.genes = NULL,
   pThres = 0.05,
-  lfcThres = 1
+  lfcThres = 1,
+  ...
 )
 }
 \arguments{
@@ -37,7 +38,9 @@ Must include columns \code{log2FoldChange}, \code{padj}, and \code{SYMBOL}.}
 
 \item{pThres}{P-value threshold for plotting. Default is 0.05.}
 
-\item{lfcThres}{Log2-fold change threshold for plotting. Default is 1.
+\item{lfcThres}{Log2-fold change threshold for plotting. Default is 1.}
+
+\item{...}{additional arguments passed to the EnhancedVolcano function.
 in addition to the top up- and downregulated genes.}
 }
 \value{

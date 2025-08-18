@@ -37,17 +37,28 @@
 
 export_plot_dual <- function(filename_base, plot_expr = NULL, width = 8, height = 6, dpi = 600) {
   if (inherits(plot_expr, c("gg", "ggplot", "ggarrange", "grob"))) {
-    ggsave(paste0(filename_base, ".png"), plot_expr,  width = width, height = height, dpi = dpi)
-    ggsave(paste0(filename_base, ".svg"), plot_expr,  width = width, height = height, device = "svg")
+    ggsave(paste0(filename_base, ".png"), plot_expr,  width = width, height = height, dpi = dpi, bg = "white")
+    ggsave(paste0(filename_base, ".svg"), plot_expr,  width = width, height = height, device = "svg", bg = "white")
   } else {
-    # Save as PNG
-    png(paste0(filename_base, ".png"), width = width, height = height, unit = "in", res = dpi)
-    eval(plot_expr)
+    # PNG
+    png(paste0(filename_base, ".png"), width = width, height = height, units = "in", res = dpi)
+    if (is.function(plot_expr)) {
+      res <- plot_expr()
+      if (inherits(res, "grob")) grid::grid.draw(res)
+    } else {
+      res <- eval(plot_expr)
+      if (inherits(res, "grob")) grid::grid.draw(res)
+    }
     dev.off()
-
-    # Save as SVG
+    # SVG
     svg(paste0(filename_base, ".svg"), width = width, height = height)
-    eval(plot_expr)
+    if (is.function(plot_expr)) {
+      res <- plot_expr()
+      if (inherits(res, "grob")) grid::grid.draw(res)
+    } else {
+      res <- eval(plot_expr)
+      if (inherits(res, "grob")) grid::grid.draw(res)
+    }
     dev.off()
   }
 }

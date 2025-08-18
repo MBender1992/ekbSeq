@@ -1,4 +1,4 @@
-#' Function to plot and save GO clusters
+#' Function to plot GO clusters
 #'
 #' This function uses a gene list of ENTREZ IDs as input for clusterProfiler's function \link[clusterProfiler]{compareCluster} with the parameters \emph{fun = enrichGO},
 #' \emph{ont = "BP"} and \emph{OrgDb = org.Hs.eg.db}. The package \emph{org.Hs.eg.db} is required for this function to work properly.
@@ -16,7 +16,7 @@
 plot_go <- function(genes, showCategory = 20, sim.thres = 0.7, sym.colors = FALSE, return.res = FALSE, font.size = 12, pvalueCutoff = 0.05, path){
   term <- NULL
 
-  names <- str_remove(deparse(substitute(genes)), "genes_")
+  names <- str_remove(deparse(substitute(genes)), "_genes")
   ## calculate clustered pathways
   ck <- enrichGO(genes, ont = "BP", keyType = "ENTREZID", OrgDb = org.Hs.eg.db, pvalueCutoff = 0.05)
   ck <- enrichplot::pairwise_termsim(ck)
@@ -52,12 +52,11 @@ plot_go <- function(genes, showCategory = 20, sim.thres = 0.7, sym.colors = FALS
   p_aux <- ggarrange(p_wc, p_bp, labels = c("A", "B"), ncol = 1)
   p <- ggarrange(p_aux, p_dp, labels = c("", "C"), ncol = 2, widths = c(1, 0.5))
   p <- annotate_figure(p, top = text_grob(paste0("Biological processes (n=", dim(ck)[1],") enriched in ", names, " genes"), face = "bold", size = 14))
-  svg(paste0(path, names, "_GOBP_wc.svg"), width=18, height=14)
-  print(p)
-  dev.off()
 
   if(return.res == TRUE){
-    list(enrich_go = ck, reduced_go = reducedTerms)
+    list(enrich_go = ck, reduced_go = reducedTerms, plot = p)
+  } else {
+    return(p)
   }
 }
 

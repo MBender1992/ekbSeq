@@ -14,6 +14,7 @@
 #' @param show.genes Optional character vector. Additional gene symbols (from the `SYMBOL` column) to label,
 #' @param pThres P-value threshold for plotting. Default is 0.05.
 #' @param lfcThres Log2-fold change threshold for plotting. Default is 1.
+#' @param ... additional arguments passed to the EnhancedVolcano function.
 #'   in addition to the top up- and downregulated genes.
 #'
 #' @return A ggplot2 object representing the volcano plot.
@@ -29,7 +30,7 @@
 #' @export
 #'
 plot_volcano <- function(results, nlabel = 30, title = "", pointsize = 2, labSize = 4,
-                         xlim = NULL, ylim = NULL, show.genes = NULL, pThres = 0.05, lfcThres = 1) {
+                         xlim = NULL, ylim = NULL, show.genes = NULL, pThres = 0.05, lfcThres = 1, ...) {
   log2FoldChange <- NULL
   padj <- NULL
 
@@ -67,6 +68,7 @@ plot_volcano <- function(results, nlabel = 30, title = "", pointsize = 2, labSiz
     pCutoff = pThres,
     FCcutoff = lfcThres,
     pointSize = pointsize,
-    labSize = labSize
+    labSize = labSize,
+    ...
   )
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_go.R
 \name{plot_go}
 \alias{plot_go}
-\title{Function to plot and save GO clusters}
+\title{Function to plot GO clusters}
 \usage{
 plot_go(
   genes,
