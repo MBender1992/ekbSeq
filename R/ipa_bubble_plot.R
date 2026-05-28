@@ -1,0 +1,131 @@
+#' Create a clusterProfiler-style bubble plot for Ingenuity Pathway Analysis (IPA) results (or similar)
+#'
+#' Build a bubble plot showing terms (pathways, upstream regulators, ...) on the y-axis,
+#' a scoring metric on the x-axis (e.g. z-score), bubble size proportional to the number
+#' of member genes, and bubble color mapped to a p-value. The function sorts results
+#' by p-value (keeps the top N) and reorders the y-axis by score for clear visual representation.
+#'
+#' This is intended for IPA output (e.g. canonical pathways or upstream regulators) but
+#' will work with any data.frame that contains:
+#' - a column with term names,
+#' - a numeric scoring metric,
+#' - a p-value column,
+#' - and a column listing member genes (comma- or slash-separated).
+#'
+#' @param df data.frame Input results table.
+#' @param name_col string Name of the column in df that contains the term (pathway/regulator) names.
+#' @param score_col string Column name for the scoring metric to plot on the x-axis. Default "z_score".
+#' @param pval_col string Column name containing p-values to map to color. Default "padj".
+#' @param genes_col string Column name containing group member identifiers (used to compute bubble size).
+#'        Members may be comma- or slash-separated strings. Default "Molecules".
+#' @param top_n integer Number of top terms to keep after sorting by p-value. Default 20.
+#' @param color_scale character(2) Two colours giving the low and high ends of the colour scale.
+#'        Default c("lightgrey", "#CD534CFF").
+#' @param size_range numeric(2) Range of point sizes for ggplot2::scale_size_continuous. Default c(3, 10).
+#' @param name_label string Text used in the plot title along with top_n (e.g. "upregulated IPA pathways").
+#' @param rotate_x logical If TRUE rotate x-axis labels 45 degrees (useful when axis labels are long). Default FALSE.
+#'
+#' @return A ggplot2 object (scatter/bubble plot). You can print it or save it with ggsave.
+#'
+#' @details
+#' The function:
+#' - checks that the requested columns exist,
+#' - computes the number of genes per term by splitting the genes_col on commas or slashes,
+#' - coerces the score and p-value to numeric and filters rows with missing values,
+#' - selects the top_n rows by ascending p-value,
+#' - reorders the y-axis factor by the score so that high/low scores are visually ordered,
+#' - if all scores are negative, flips the x-axis so the most negative values appear at the top
+#'   (consistent with some clusterProfiler visual conventions),
+#' - maps bubble size to gene count and colour to p-value (colour scale uses reverse transformation
+#'   so lower p-values appear with the high colour).
+#'
+#' @examples
+#' \dontrun{
+#' # IPA canonical pathways (up/down)
+#' p1 <- ipa_bubble_plot(dat_pw_up,
+#'                       name_col = "Ingenuity_Canonical_Pathways",
+#'                       name_label = "upregulated IPA pathways")
+#' p2 <- ipa_bubble_plot(dat_pw_down,
+#'                       name_col = "Ingenuity_Canonical_Pathways",
+#'                       name_label = "downregulated IPA pathways")
+#'
+#' # IPA upstream regulators (specifying different column names)
+#' p1 <- ipa_bubble_plot(dat_upstream_up,
+#'                       name_col = "Upstream_Regulator",
+#'                       score_col = "Activation_z_score",
+#'                       pval_col = "p_value_of_overlap",
+#'                       genes_col = "Target_Molecules_in_Dataset",
+#'                       name_label = "upregulated upstream regulators")
+#'
+#' p2 <- ipa_bubble_plot(dat_upstream_down,
+#'                       name_col = "Upstream_Regulator",
+#'                       score_col = "Activation_z_score",
+#'                       pval_col = "p_value_of_overlap",
+#'                       genes_col = "Target_Molecules_in_Dataset",
+#'                       name_label = "downregulated upstream regulators")
+#' }
+#'
+#' @export
+ipa_bubble_plot <- function(
+    df,
+    name_col,
+    score_col = "z_score",
+    pval_col = "padj",
+    genes_col = "Molecules",
+    top_n = 20,
+    color_scale = c("lightgrey", "#CD534CFF"),
+    size_range = c(3, 10),
+    name_label = "Term",
+    rotate_x = FALSE
+) {
+  # Defensive: check columns exist
+  stopifnot(all(c(name_col, score_col, pval_col, genes_col) %in% colnames(df)))
+
+  # Prepare the data
+    plot_df <- df %>%
+    dplyr::mutate(
+      n_genes = ifelse(
+        is.na(.data[[genes_col]]),
+        NA,
+        sapply(strsplit(as.character(.data[[genes_col]]), ",|/"), length)
+      ),
+      score = as.numeric(.data[[score_col]]),
+      pval  = as.numeric(.data[[pval_col]]),
+      name  = .data[[name_col]]
+    ) %>%
+    dplyr::filter(!is.na(.data$score), !is.na(.data$pval))
+
+  # Sort and select top_n by pvalue
+  plot_df <- plot_df %>%
+    dplyr::arrange(.data$pval) %>%
+    dplyr::slice(seq_len(min(top_n, nrow(plot_df))))
+
+  # Check if all scores are negative (flip axis if true)
+  all_negative <- all(plot_df$score < 0, na.rm = TRUE)
+
+  # Reorder y-axis so lowest scores (most negative) are at the top, highest at bottom
+  # This works for both negative and positive scores, and is consistent with clusterProfiler
+  plot_df$name <- factor(plot_df$name, levels = plot_df$name[order(plot_df$score, decreasing = FALSE)])
+
+  if(all_negative) plot_df$name <- factor(plot_df$name, levels = plot_df$name[order(plot_df$score, decreasing = TRUE)])
+
+  p <- ggplot(plot_df, aes(x = .data$score, y = .data$name, size = .data$n_genes, color = .data$pval)) +
+    geom_point(alpha = 0.8) +
+    scale_size_continuous(range = size_range, name = "Gene count") +
+    scale_color_gradient(low = color_scale[1], high = color_scale[2], name = pval_col, trans = "reverse") +
+    labs(
+      x = score_col,
+      y = "",
+      title = paste("Top", top_n, name_label)
+    ) +
+    theme_bw(base_size = 14) +
+    theme(axis.text.y = element_text(size = 9))
+
+  if (all_negative) {
+    p <- p + scale_x_reverse()
+  }
+  if (rotate_x) {
+    p <- p + theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+  }
+  return(p)
+}

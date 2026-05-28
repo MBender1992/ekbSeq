@@ -22,11 +22,15 @@ pca_plot <- function(data, pcsToUse, title = "", subtitle = "",  type = "VST", c
     jco_colors <- pal_jco()(10)
     colors <- c(npg_colors, jco_colors)
   }
-
+  if(length(intgroup) > 1 && is.factor(data[[intgroup[2]]])) {
+    shape_aes <- intgroup[2]
+  } else {
+    shape_aes <- NULL # Don't map shape
+  }
   pca <- DESeq2::plotPCA(data, intgroup = intgroup, returnData = TRUE, pcsToUse = pcsToUse)
   percentVar <- round(100 * attr(pca, "percentVar"))
   name <- NULL
-  p <- ggplot(pca, aes_string(x = paste0("PC", pcsToUse[1]), y = paste0("PC", pcsToUse[2]), color = intgroup[1], shape = intgroup[2])) +
+  p <- ggplot(pca, aes_string(x = paste0("PC", pcsToUse[1]), y = paste0("PC", pcsToUse[2]), color = intgroup[1], shape = shape_aes)) +
     geom_point(size =pointSize) +
     labs(title = title, subtitle = subtitle) +
     xlab(paste0("PC", pcsToUse[1], ": ", percentVar[1], "% variance")) +

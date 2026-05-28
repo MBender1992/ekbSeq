@@ -12,6 +12,7 @@ plot_volcano(
   labSize = 4,
   xlim = NULL,
   ylim = NULL,
+  plot.signif = TRUE,
   show.genes = NULL,
   pThres = 0.05,
   lfcThres = 1,
@@ -33,6 +34,8 @@ Must include columns \code{log2FoldChange}, \code{padj}, and \code{SYMBOL}.}
 \item{xlim}{Numeric vector of length 2. X-axis limits (log2 fold change). Default is \code{c(-8, 8)}.}
 
 \item{ylim}{Numeric vector of length 2. Y-axis limits (–log10 p-value). Default is \code{c(-0.5, 100)}.}
+
+\item{plot.signif}{Logical indicating whether significant results should be highlighted. Default is TRUE. Can be specified together with show.genes to show significant results AND selected genes.}
 
 \item{show.genes}{Optional character vector. Additional gene symbols (from the \code{SYMBOL} column) to label,}
 

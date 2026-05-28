@@ -9,7 +9,9 @@ export_plot_dual(
   plot_expr = NULL,
   width = 8,
   height = 6,
-  dpi = 600
+  dpi = 600,
+  font = "Liberation Sans",
+  rasterize = TRUE
 )
 }
 \arguments{
@@ -17,15 +19,20 @@ export_plot_dual(
 
 \item{plot_expr}{A plot object, function, or expression to be saved.
 \itemize{
-\item If a ggplot object (class \code{"gg"}, \code{"ggplot"}, or \code{"ggarrange"}), it is saved via \code{ggsave()}.
-\item If a function or quoted expression, it is evaluated inside \code{png()} and \code{svg()} devices for base R plots.
+\item If a ggplot object (class \code{"gg"}, \code{"ggplot"}, or \code{"ggarrange"}), it is saved via \code{ggsave()} (PNG) and \code{grDevices::svg()} (SVG).
+\item If a function or quoted expression, it is evaluated inside \code{png()} and \code{grDevices::svg()} devices for base R plots.
 }}
 
 \item{width}{Numeric. Width of the plot in inches. Default is 8.}
 
 \item{height}{Numeric. Height of the plot in inches. Default is 6.}
 
-\item{dpi}{Numeric. Resolution (dots per inch) for PNG output. Default is 600.}
+\item{dpi}{Numeric. Resolution (dots per inch) for PNG output and rasterized layers. Default is 600.}
+
+\item{font}{Character. Font family for SVG output. Default is \code{"Liberation Sans"}.}
+
+\item{rasterize}{Logical. If TRUE and \code{ggrastr} is installed, point/raster layers are
+rasterized inside the SVG for faster Inkscape performance. Default is TRUE.}
 }
 \value{
 Invisibly returns \code{NULL}.
@@ -34,24 +41,26 @@ Invisibly returns \code{NULL}.
 This function saves a plot in both PNG and SVG formats using either \code{ggsave()} for \strong{ggplot2} objects or base R graphics devices for base plotting expressions or functions.
 }
 \details{
-If a \strong{ggplot} object or compatible plot object (e.g., \code{ggarrange}) is provided, it uses \code{ggsave()} to save the plot.
-For base R plots, you can pass either a plotting expression (quoted) or a plotting function which will be evaluated inside the device context.
-
-The function automatically adds \code{.png} and \code{.svg} extensions to \code{filename_base} and saves the plot in both formats.
-For \strong{ggplot2} objects, \code{ggsave()} is used for both formats with appropriate arguments.
-For base plotting, the plot is drawn inside \code{png()} and \code{svg()} graphic devices using the provided expression or function.
+PNG export uses \code{ggsave()} for ggplot objects. SVG export uses \code{grDevices::svg()} with
+Cairo backend, which ensures text elements are stored without scale() transforms,
+making them fully and correctly editable in Inkscape (font size changes scale uniformly,
+no squishing). For point-heavy plots (e.g. UMAPs), \code{ggrastr} is used automatically to
+rasterize geometry layers inside the SVG, keeping Inkscape responsive.
 }
 \examples{
 \dontrun{
 library(ggplot2)
 p <- ggplot(mtcars, aes(mpg, wt)) + geom_point()
-export_plot_dual2("my_ggplot", p)
+export_plot_dual("my_ggplot", p)
 
-# Using a base plot as a function
-export_plot_dual2("my_baseplot", function() plot(mtcars$mpg, mtcars$wt))
+# Disable rasterization
+export_plot_dual("my_ggplot", p, rasterize = FALSE)
 
-# Using a base plot as an expression
-export_plot_dual2("my_baseplot_expr", quote(plot(mtcars$mpg, mtcars$wt)))
+# Base R plot as function
+export_plot_dual("my_baseplot", function() plot(mtcars$mpg, mtcars$wt))
+
+# Base R plot as expression
+export_plot_dual("my_baseplot_expr", quote(plot(mtcars$mpg, mtcars$wt)))
 }
 
 }

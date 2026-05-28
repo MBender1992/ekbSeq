@@ -4,38 +4,47 @@
 \alias{plot_3d_diffusion}
 \title{3D Diffusion Map Visualization with Flexible Coloring}
 \usage{
-plot_3d_diffusion(diffmap_df, curve_df, label_df = NULL, color_by = "Lineage1")
+plot_3d_diffusion(
+  diffmap_df,
+  curve_df = NULL,
+  label_df = NULL,
+  color_by = "Lineage1",
+  point_size = 2,
+  legend_size = 16,
+  camera_eye = list(x = -1.5, y = 0.3, z = 1),
+  minimal = FALSE
+)
 }
 \arguments{
-\item{diffmap_df}{A data.frame containing at least the columns \code{DC1}, \code{DC2}, \code{DC3} (diffusion components)
-and the variable to color by (e.g. pseudotime, timepoint).}
+\item{diffmap_df}{A data.frame containing at least the columns DC1, DC2, DC3 (diffusion components)
+and the variable to color by (e.g. pseudotime, timepoint, cluster).}
 
-\item{curve_df}{A data.frame containing diffusion components (DC1, DC2, DC3) and a \code{curve_id} column for trajectory curves.}
+\item{curve_df}{(Optional) A data.frame containing diffusion components (DC1, DC2, DC3) and a curve_id column for trajectory curves.}
 
-\item{label_df}{(Optional) A data.frame with columns \code{DC1}, \code{DC2}, \code{DC3}, and \code{lineage_name} for labeling trajectories.}
+\item{label_df}{(Optional) A data.frame with columns DC1, DC2, DC3, and lineage_name for labeling trajectories.}
 
-\item{color_by}{Character. The column name in \code{diffmap_df} to use for coloring points.}
+\item{color_by}{Character. The column name in diffmap_df to use for coloring points.}
+
+\item{point_size}{Size of points.}
+
+\item{legend_size}{Size of legend.}
+
+\item{camera_eye}{x, y and z coordinates giving the angle of the graphical 3D representation}
+
+\item{minimal}{Logical. If TRUE, hide axes and grid. Default is FALSE.}
 }
 \value{
 An interactive plotly 3D scatterplot object.
 }
 \description{
 This function generates an interactive 3D scatter plot of diffusion map coordinates using plotly.
-Points can be colored by any continuous or discrete variable, supporting pseudotime or groupings.
-Trajectory curves and lineage labels can be added for visualizing differentiation paths.
+Points can be colored by any continuous or discrete variable (e.g. pseudotime, timepoint, clusters, etc.).
+Trajectory curves and lineage labels can be added for visualizing differentiation paths, but are optional.
 }
 \details{
-If \code{color_by} refers to a numeric column with more than ten unique values, a continuous
-\code{viridis} color scale is used. If \code{color_by} refers to a factor, character, or integer column
-(with few unique values), a discrete palette from \code{scCustomize::DiscretePalette_scCustomize()} is used.
+If color_by refers to a numeric column with more than 20 unique values, a continuous
+viridis color scale is used. Otherwise, a discrete palette from scCustomize::DiscretePalette_scCustomize() is used.
 
-Trajectory curves from \code{curve_df} are plotted as black lines. Optional lineage labels from \code{label_df}
-are displayed in red.
-}
-\examples{
-\dontrun{
-# After adding pseudotimes for all lineages to diffmap_df:
-plot_3d_diffusion(diffmap_df, curve_df, label_df, color_by = "Lineage1")
-plot_3d_diffusion(diffmap_df, curve_df, label_df, color_by = "timepoint")
-}
+Trajectory curves from curve_df are plotted as black lines if provided.
+Optional lineage labels from label_df are displayed in black if provided.
 }

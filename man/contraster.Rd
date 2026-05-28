@@ -17,5 +17,5 @@ contraster(dds, group1, group2, weighted = F)
 }
 \description{
 Function is taken from https://www.atakanekiz.com/technical/a-guide-to-designs-and-contrasts-in-DESeq2/ to allow complex
-contrasts including difference of differences and individual comparisons
+contrasts including difference of differences and individual comparisons.
 }

@@ -1,7 +1,7 @@
 #' Function to define complex contrasts in DESeq results function.
 #'
 #' Function is taken from https://www.atakanekiz.com/technical/a-guide-to-designs-and-contrasts-in-DESeq2/ to allow complex
-#' contrasts including difference of differences and individual comparisons
+#' contrasts including difference of differences and individual comparisons.
 #' @param dds DESeq object containing colData and design
 #' @param group1 list of character vectors each with 2 or more items
 #' @param group2 list of character vectors each with 2 or more items

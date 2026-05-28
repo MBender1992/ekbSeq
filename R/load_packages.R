@@ -8,6 +8,7 @@
 #' @import enrichplot
 #' @import tm
 #' @import SummarizedExperiment
+#' @importFrom rlang .data
 #' @importFrom stats as.formula setNames
 #' @importFrom org.Hs.eg.db org.Hs.eg.db
 #' @importFrom utils write.csv
@@ -20,7 +21,7 @@
 #' @importFrom rrvgo calculateSimMatrix reduceSimMatrix
 #' @importFrom DESeq2 results lfcShrink
 #' @importFrom openxlsx write.xlsx
-#' @importFrom dplyr left_join
+#' @importFrom dplyr mutate filter arrange slice select left_join
 #' @importFrom EnhancedVolcano EnhancedVolcano
 NULL
 

@@ -18,13 +18,8 @@ plot_go <- function(genes, showCategory = 20, sim.thres = 0.7, sym.colors = FALS
 
   names <- str_remove(deparse(substitute(genes)), "_genes")
   ## calculate clustered pathways
-  ck <- enrichGO(genes, ont = "BP", keyType = "ENTREZID", OrgDb = org.Hs.eg.db, pvalueCutoff = 0.05)
-  ck <- enrichplot::pairwise_termsim(ck)
-  ck <- setReadable(ck, OrgDb = org.Hs.eg.db, keyType="ENTREZID")
-  simMatrix <- calculateSimMatrix(ck$ID, orgdb = "org.Hs.eg.db", ont = "BP", method = "Rel")
-  scores <- stats::setNames(-log10(ck$p.adjust), ck$ID)
-  res <- reduceSimMatrix(simMatrix, scores, threshold = sim.thres, orgdb = "org.Hs.eg.db")
-  reducedTerms <- res[res$go == res$parent, ]
+  ego <- enrichGO(genes, ont = "BP", keyType = "ENTREZID", OrgDb = org.Hs.eg.db, pvalueCutoff = 0.05)
+  reducedTerms <- reduce_go_rrvgo(ego)
 
   ## define data frame for barplot
   df_bp <- head(reducedTerms, 20)
@@ -41,8 +36,8 @@ plot_go <- function(genes, showCategory = 20, sim.thres = 0.7, sym.colors = FALS
   }
   colours <- c("#440154FF", "#470D60FF", "#39558CFF", "#26818EFF",  "#1F998AFF", "#C9E020FF", "#FDE725FF")
 
-  p_dp <- dotplot(ck, showCategory = showCategory,  font.size = font.size) + theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) + scale_fill_viridis_c()
-  p_wc <- plot_wordcloud(ck$Description)
+  p_dp <- dotplot(ego, showCategory = showCategory,  font.size = font.size) + theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) + scale_fill_viridis_c()
+  p_wc <- plot_wordcloud(ego$Description)
   p_bp <- ggbarplot(df_bp, x = "term", y = "score", fill = "score") +
     scale_y_continuous(expand = c(0,0)) + xlab("") + ylab("-log10 adjusted pvalue") +
     scale_fill_gradientn(name = "-log10 adjusted pvalue", limits  = range(reducedTerms$score), colours = colours[c(1, seq_along(colours), length(colours))],  values  = c(0, scales::rescale(colour_breaks, from = range(reducedTerms$score)), 1)) +
@@ -51,10 +46,10 @@ plot_go <- function(genes, showCategory = 20, sim.thres = 0.7, sym.colors = FALS
   ## arrange plots
   p_aux <- ggarrange(p_wc, p_bp, labels = c("A", "B"), ncol = 1)
   p <- ggarrange(p_aux, p_dp, labels = c("", "C"), ncol = 2, widths = c(1, 0.5))
-  p <- annotate_figure(p, top = text_grob(paste0("Biological processes (n=", dim(ck)[1],") enriched in ", names, " genes"), face = "bold", size = 14))
+  p <- annotate_figure(p, top = text_grob(paste0("Biological processes (n=", dim(ego)[1],") enriched in ", names, " genes"), face = "bold", size = 14))
 
   if(return.res == TRUE){
-    list(enrich_go = ck, reduced_go = reducedTerms, plot = p)
+    list(enrich_go = ego, reduced_go = reducedTerms, plot = p)
   } else {
     return(p)
   }

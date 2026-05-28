@@ -12,6 +12,7 @@
 #' @param xlim Numeric vector of length 2. X-axis limits (log2 fold change). Default is `c(-8, 8)`.
 #' @param ylim Numeric vector of length 2. Y-axis limits (–log10 p-value). Default is `c(-0.5, 100)`.
 #' @param show.genes Optional character vector. Additional gene symbols (from the `SYMBOL` column) to label,
+#' @param plot.signif Logical indicating whether significant results should be highlighted. Default is TRUE. Can be specified together with show.genes to show significant results AND selected genes.
 #' @param pThres P-value threshold for plotting. Default is 0.05.
 #' @param lfcThres Log2-fold change threshold for plotting. Default is 1.
 #' @param ... additional arguments passed to the EnhancedVolcano function.
@@ -30,7 +31,7 @@
 #' @export
 #'
 plot_volcano <- function(results, nlabel = 30, title = "", pointsize = 2, labSize = 4,
-                         xlim = NULL, ylim = NULL, show.genes = NULL, pThres = 0.05, lfcThres = 1, ...) {
+                         xlim = NULL, ylim = NULL, plot.signif = TRUE, show.genes = NULL, pThres = 0.05, lfcThres = 1, ...) {
   log2FoldChange <- NULL
   padj <- NULL
 
@@ -54,10 +55,14 @@ plot_volcano <- function(results, nlabel = 30, title = "", pointsize = 2, labSiz
     ylim <- c(-0.5, max_y)
   }
 
+  if(plot.signif) {
+    show.genes <- c(down$SYMBOL, up$SYMBOL, show.genes)
+  }
+
   EnhancedVolcano::EnhancedVolcano(
     as.data.frame(results),
     lab = results$SYMBOL,
-    selectLab = c(down$SYMBOL, up$SYMBOL, show.genes),
+    selectLab = show.genes,
     x = 'log2FoldChange',
     y = 'padj',
     gridlines.major = FALSE,

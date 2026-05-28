@@ -8,6 +8,8 @@
 #' @param species_db OrgDb object (default org.Hs.eg.db).
 #' @param ont GO ontology ("BP", "MF", "CC"), default "BP".
 #' @param do_kegg Logical, whether to perform KEGG enrichment.
+#' @param go_simplify Logical, whether GO terms should be simplified to reduce redundancy using clusterProfiler::simplify. Default is TRUE
+#' @param simplify_cutoff similarity threshold
 #'
 #' @return List with enrichment results for up/down genes (GO/KEGG).
 #' @export
@@ -57,10 +59,10 @@ do_enrichment_tradeSeq <- function(
   # Simplify GO results to reduce redundancy
   if (go_simplify) {
     if (!is.null(go_up) && nrow(as.data.frame(go_up)) > 0) {
-      go_up <- simplify(go_up, cutoff = simplify_cutoff, by = "p.adjust", select_fun = min)
+      go_up <- clusterProfiler::simplify(go_up, cutoff = simplify_cutoff, by = "p.adjust", select_fun = min)
     }
     if (!is.null(go_down) && nrow(as.data.frame(go_down)) > 0) {
-      go_down <- simplify(go_down, cutoff = simplify_cutoff, by = "p.adjust", select_fun = min)
+      go_down <- clusterProfiler::simplify(go_down, cutoff = simplify_cutoff, by = "p.adjust", select_fun = min)
     }
   }
 
