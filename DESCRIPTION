@@ -1,6 +1,6 @@
 Package: ekbSeq
 Title: Collection of functions to facilitate NGS analyses
-Version: 0.5.0
+Version: 0.5.1
 Authors@R: 
     person(given = "Marc",
            family = "Bender",

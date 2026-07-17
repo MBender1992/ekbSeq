@@ -11,7 +11,8 @@ export_plot_dual(
   height = 6,
   dpi = 600,
   font = "Liberation Sans",
-  rasterize = TRUE
+  rasterize = TRUE,
+  grid_capture = FALSE
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ export_plot_dual(
 
 \item{rasterize}{Logical. If TRUE and \code{ggrastr} is installed, point/raster layers are
 rasterized inside the SVG for faster Inkscape performance. Default is TRUE.}
+
+\item{grid_capture}{Logical. If TRUE, the plot is first captured as a grid grob via \code{grid::grid.grabExpr()} and then redrawn into the SVG device. This is useful for ComplexHeatmap or other grid-based plots that may otherwise produce empty or incomplete SVG output. Default is FALSE.}
 }
 \value{
 Invisibly returns \code{NULL}.

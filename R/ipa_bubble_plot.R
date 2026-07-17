@@ -73,7 +73,7 @@ ipa_bubble_plot <- function(
     pval_col = "padj",
     genes_col = "Molecules",
     top_n = 20,
-    color_scale = c("lightgrey", "#CD534CFF"),
+    color_scale = c("lightgrey", "#4292C6"), #"#CD534CFF"
     size_range = c(3, 10),
     name_label = "Term",
     rotate_x = FALSE

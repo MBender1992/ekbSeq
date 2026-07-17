@@ -18,7 +18,7 @@
 #' @param font Character. Font family for SVG output. Default is `"Liberation Sans"`.
 #' @param rasterize Logical. If TRUE and `ggrastr` is installed, point/raster layers are
 #'   rasterized inside the SVG for faster Inkscape performance. Default is TRUE.
-#'
+#' @param grid_capture Logical. If TRUE, the plot is first captured as a grid grob via `grid::grid.grabExpr()` and then redrawn into the SVG device. This is useful for ComplexHeatmap or other grid-based plots that may otherwise produce empty or incomplete SVG output. Default is FALSE.
 #' @return Invisibly returns `NULL`.
 #'
 #' @examples
@@ -39,15 +39,17 @@
 #'
 #' @export
 export_plot_dual <- function(filename_base, plot_expr = NULL, width = 8, height = 6,
-                             dpi = 600, font = "Liberation Sans", rasterize = TRUE) {
+                             dpi = 600, font = "Liberation Sans", rasterize = TRUE,
+                             grid_capture = FALSE) {
 
   .svg_device <- function(filepath, p) {
-    # fix_text_size = FALSE removes textLength from the SVG
-    svglite::svglite(filepath,
-                     width = width,
-                     height = height,
-                     system_fonts = list(sans = font),
-                     fix_text_size = FALSE)
+    svglite::svglite(
+      filepath,
+      width = width,
+      height = height,
+      system_fonts = list(sans = font),
+      fix_text_size = FALSE
+    )
     print(p)
     dev.off()
   }
@@ -56,24 +58,37 @@ export_plot_dual <- function(filename_base, plot_expr = NULL, width = 8, height 
     if (is.function(plot_expr)) {
       res <- plot_expr()
     } else {
-      res <- eval(plot_expr)
+      res <- eval(plot_expr, envir = parent.frame())
     }
-    if (inherits(res, "grob")) grid::grid.draw(res)
+
+    if (inherits(res, "grob")) {
+      grid::grid.draw(res)
+    }
+
+    invisible(res)
   }
 
-  if (inherits(plot_expr, c("gg", "ggplot", "ggarrange", "grob"))) {
+  if (inherits(plot_expr, c("gg", "ggplot", "ggarrange", "grob")) && !grid_capture) {
 
-    # PNG
-    ggsave(paste0(filename_base, ".png"), plot_expr,
-           width = width, height = height, dpi = dpi, bg = "white")
+    # PNG export for ggplot-like objects
+    ggsave(
+      paste0(filename_base, ".png"),
+      plot_expr,
+      width = width,
+      height = height,
+      dpi = dpi,
+      bg = "white"
+    )
 
-    # SVG: optional ggrastr rasterizing
+    # SVG export with optional rasterization of heavy geometry layers
     if (rasterize && requireNamespace("ggrastr", quietly = TRUE)) {
       plot_svg <- ggrastr::rasterise(plot_expr, dpi = dpi, dev = "ragg")
     } else {
       if (rasterize && !requireNamespace("ggrastr", quietly = TRUE)) {
-        message("ggrastr nicht gefunden - SVG wird ohne Rasterisierung gespeichert.\n",
-                "Installieren mit: install.packages('ggrastr')")
+        message(
+          "ggrastr was not found - SVG will be saved without rasterization.\n",
+          "Install it with: install.packages('ggrastr')"
+        )
       }
       plot_svg <- plot_expr
     }
@@ -82,22 +97,61 @@ export_plot_dual <- function(filename_base, plot_expr = NULL, width = 8, height 
 
   } else {
 
-    # PNG
-    png(paste0(filename_base, ".png"), width = width, height = height, units = "in", res = dpi)
-    .eval_plot()
-    dev.off()
-
-    # SVG
-    svglite::svglite(paste0(filename_base, ".svg"),
-                     width = width,
-                     height = height,
-                     system_fonts = list(sans = font),
-                     fix_text_size = FALSE)
+    # PNG export for base R, grid, or ComplexHeatmap-style plots
+    png(
+      paste0(filename_base, ".png"),
+      width = width,
+      height = height,
+      units = "in",
+      res = dpi,
+      type = "cairo",
+      bg = "white"
+    )
     grid::grid.newpage()
     .eval_plot()
     dev.off()
 
+    # SVG export
+    if (grid_capture) {
+
+      # Important for ComplexHeatmap/grid plots:
+      # first capture the drawn plot as a grob, then redraw it into the SVG device.
+      plot_grob <- grid::grid.grabExpr(
+        {
+          grid::grid.newpage()
+          .eval_plot()
+        },
+        width = width,
+        height = height
+      )
+
+      svglite::svglite(
+        paste0(filename_base, ".svg"),
+        width = width,
+        height = height,
+        system_fonts = list(sans = font),
+        fix_text_size = FALSE
+      )
+      grid::grid.newpage()
+      grid::grid.draw(plot_grob)
+      dev.off()
+
+    } else {
+
+      svglite::svglite(
+        paste0(filename_base, ".svg"),
+        width = width,
+        height = height,
+        system_fonts = list(sans = font),
+        fix_text_size = FALSE
+      )
+      grid::grid.newpage()
+      .eval_plot()
+      dev.off()
+    }
   }
 
   invisible(NULL)
 }
+
+
