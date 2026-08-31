@@ -49,6 +49,7 @@ Imports:
 	viridis,
 	xml2
 Suggests:
+	Cairo,
 	ggrastr
 Remotes: 
 	MBender1992/emR

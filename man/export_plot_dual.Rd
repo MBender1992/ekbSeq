@@ -12,58 +12,42 @@ export_plot_dual(
   dpi = 600,
   font = "Liberation Sans",
   rasterize = TRUE,
-  grid_capture = FALSE
+  grid_capture = FALSE,
+  svg_backend = c("svglite", "cairo", "base"),
+  base_graphics = FALSE
 )
 }
 \arguments{
-\item{filename_base}{Character. Base file path (without extension) where the plots will be saved.}
+\item{filename_base}{Character. Base file path without file extension.}
 
-\item{plot_expr}{A plot object, function, or expression to be saved.
-\itemize{
-\item If a ggplot object (class \code{"gg"}, \code{"ggplot"}, or \code{"ggarrange"}), it is saved via \code{ggsave()} (PNG) and \code{grDevices::svg()} (SVG).
-\item If a function or quoted expression, it is evaluated inside \code{png()} and \code{grDevices::svg()} devices for base R plots.
-}}
+\item{plot_expr}{A plot object, function, or quoted expression to be saved.}
 
 \item{width}{Numeric. Width of the plot in inches. Default is 8.}
 
 \item{height}{Numeric. Height of the plot in inches. Default is 6.}
 
-\item{dpi}{Numeric. Resolution (dots per inch) for PNG output and rasterized layers. Default is 600.}
+\item{dpi}{Numeric. Resolution in dots per inch for PNG output and rasterized layers. Default is 600.}
 
-\item{font}{Character. Font family for SVG output. Default is \code{"Liberation Sans"}.}
+\item{font}{Character. Font family used for SVG output. Default is \code{"Liberation Sans"}.}
 
-\item{rasterize}{Logical. If TRUE and \code{ggrastr} is installed, point/raster layers are
-rasterized inside the SVG for faster Inkscape performance. Default is TRUE.}
+\item{rasterize}{Logical. If TRUE and \code{ggrastr} is installed, ggplot geometry layers are rasterized inside the SVG. Default is TRUE.}
 
-\item{grid_capture}{Logical. If TRUE, the plot is first captured as a grid grob via \code{grid::grid.grabExpr()} and then redrawn into the SVG device. This is useful for ComplexHeatmap or other grid-based plots that may otherwise produce empty or incomplete SVG output. Default is FALSE.}
+\item{grid_capture}{Logical. If TRUE, captures grid-based plots with \code{grid::grid.grabExpr()} before SVG export, which can prevent empty SVG output for ComplexHeatmap-style plots. Default is FALSE.}
+
+\item{svg_backend}{Character. SVG backend to use. \code{"svglite"} keeps text highly editable in Inkscape, \code{"cairo"} can be useful for some non-ggplot outputs, and \code{"base"} uses \code{grDevices::svg()} as a fallback for base graphics. Default is \code{"svglite"}.}
+
+\item{base_graphics}{Logical. If TRUE, the plot is exported using direct base graphics devices without \code{grid::grid.newpage()} or grid capture. This is useful for base R or igraph-style plots such as CellChat network plots. Default is FALSE.}
 }
 \value{
 Invisibly returns \code{NULL}.
 }
 \description{
-This function saves a plot in both PNG and SVG formats using either \code{ggsave()} for \strong{ggplot2} objects or base R graphics devices for base plotting expressions or functions.
+This function saves a plot in both PNG and SVG formats. It supports ggplot2
+objects, patchwork/ggarrange-like objects, base R plotting functions or
+expressions, and grid-based plots such as ComplexHeatmap.
 }
 \details{
-PNG export uses \code{ggsave()} for ggplot objects. SVG export uses \code{grDevices::svg()} with
-Cairo backend, which ensures text elements are stored without scale() transforms,
-making them fully and correctly editable in Inkscape (font size changes scale uniformly,
-no squishing). For point-heavy plots (e.g. UMAPs), \code{ggrastr} is used automatically to
-rasterize geometry layers inside the SVG, keeping Inkscape responsive.
-}
-\examples{
-\dontrun{
-library(ggplot2)
-p <- ggplot(mtcars, aes(mpg, wt)) + geom_point()
-export_plot_dual("my_ggplot", p)
-
-# Disable rasterization
-export_plot_dual("my_ggplot", p, rasterize = FALSE)
-
-# Base R plot as function
-export_plot_dual("my_baseplot", function() plot(mtcars$mpg, mtcars$wt))
-
-# Base R plot as expression
-export_plot_dual("my_baseplot_expr", quote(plot(mtcars$mpg, mtcars$wt)))
-}
-
+PNG export uses either \code{ggsave()} for ggplot-like objects or a Cairo-based
+PNG device for base/grid plotting expressions. SVG export uses either
+\code{svglite::svglite()}, \code{Cairo::CairoSVG()}, or the base R \code{svg()} device.
 }

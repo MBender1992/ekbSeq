@@ -1,64 +1,51 @@
 #' Save a Plot as PNG and SVG Files Simultaneously
 #'
-#' This function saves a plot in both PNG and SVG formats using either `ggsave()` for **ggplot2** objects or base R graphics devices for base plotting expressions or functions.
+#' This function saves a plot in both PNG and SVG formats. It supports ggplot2
+#' objects, patchwork/ggarrange-like objects, base R plotting functions or
+#' expressions, and grid-based plots such as ComplexHeatmap.
 #'
-#' PNG export uses `ggsave()` for ggplot objects. SVG export uses `grDevices::svg()` with
-#' Cairo backend, which ensures text elements are stored without scale() transforms,
-#' making them fully and correctly editable in Inkscape (font size changes scale uniformly,
-#' no squishing). For point-heavy plots (e.g. UMAPs), `ggrastr` is used automatically to
-#' rasterize geometry layers inside the SVG, keeping Inkscape responsive.
+#' PNG export uses either `ggsave()` for ggplot-like objects or a Cairo-based
+#' PNG device for base/grid plotting expressions. SVG export uses either
+#' `svglite::svglite()`, `Cairo::CairoSVG()`, or the base R `svg()` device.
 #'
-#' @param filename_base Character. Base file path (without extension) where the plots will be saved.
-#' @param plot_expr A plot object, function, or expression to be saved.
-#'   - If a ggplot object (class `"gg"`, `"ggplot"`, or `"ggarrange"`), it is saved via `ggsave()` (PNG) and `grDevices::svg()` (SVG).
-#'   - If a function or quoted expression, it is evaluated inside `png()` and `grDevices::svg()` devices for base R plots.
+#' @param filename_base Character. Base file path without file extension.
+#' @param plot_expr A plot object, function, or quoted expression to be saved.
 #' @param width Numeric. Width of the plot in inches. Default is 8.
 #' @param height Numeric. Height of the plot in inches. Default is 6.
-#' @param dpi Numeric. Resolution (dots per inch) for PNG output and rasterized layers. Default is 600.
-#' @param font Character. Font family for SVG output. Default is `"Liberation Sans"`.
-#' @param rasterize Logical. If TRUE and `ggrastr` is installed, point/raster layers are
-#'   rasterized inside the SVG for faster Inkscape performance. Default is TRUE.
-#' @param grid_capture Logical. If TRUE, the plot is first captured as a grid grob via `grid::grid.grabExpr()` and then redrawn into the SVG device. This is useful for ComplexHeatmap or other grid-based plots that may otherwise produce empty or incomplete SVG output. Default is FALSE.
+#' @param dpi Numeric. Resolution in dots per inch for PNG output and rasterized layers. Default is 600.
+#' @param font Character. Font family used for SVG output. Default is `"Liberation Sans"`.
+#' @param rasterize Logical. If TRUE and `ggrastr` is installed, ggplot geometry layers are rasterized inside the SVG. Default is TRUE.
+#' @param grid_capture Logical. If TRUE, captures grid-based plots with `grid::grid.grabExpr()` before SVG export, which can prevent empty SVG output for ComplexHeatmap-style plots. Default is FALSE.
+#' @param svg_backend Character. SVG backend to use. `"svglite"` keeps text highly editable in Inkscape, `"cairo"` can be useful for some non-ggplot outputs, and `"base"` uses `grDevices::svg()` as a fallback for base graphics. Default is `"svglite"`.
+#' @param base_graphics Logical. If TRUE, the plot is exported using direct base graphics devices without `grid::grid.newpage()` or grid capture. This is useful for base R or igraph-style plots such as CellChat network plots. Default is FALSE.
+#'
 #' @return Invisibly returns `NULL`.
 #'
-#' @examples
-#' \dontrun{
-#' library(ggplot2)
-#' p <- ggplot(mtcars, aes(mpg, wt)) + geom_point()
-#' export_plot_dual("my_ggplot", p)
-#'
-#' # Disable rasterization
-#' export_plot_dual("my_ggplot", p, rasterize = FALSE)
-#'
-#' # Base R plot as function
-#' export_plot_dual("my_baseplot", function() plot(mtcars$mpg, mtcars$wt))
-#'
-#' # Base R plot as expression
-#' export_plot_dual("my_baseplot_expr", quote(plot(mtcars$mpg, mtcars$wt)))
-#' }
-#'
 #' @export
-export_plot_dual <- function(filename_base, plot_expr = NULL, width = 8, height = 6,
-                             dpi = 600, font = "Liberation Sans", rasterize = TRUE,
-                             grid_capture = FALSE) {
+export_plot_dual <- function(filename_base,
+                             plot_expr = NULL,
+                             width = 8,
+                             height = 6,
+                             dpi = 600,
+                             font = "Liberation Sans",
+                             rasterize = TRUE,
+                             grid_capture = FALSE,
+                             svg_backend = c("svglite", "cairo", "base"),
+                             base_graphics = FALSE) {
 
-  .svg_device <- function(filepath, p) {
-    svglite::svglite(
-      filepath,
-      width = width,
-      height = height,
-      system_fonts = list(sans = font),
-      fix_text_size = FALSE
-    )
-    print(p)
-    dev.off()
+  svg_backend <- match.arg(svg_backend)
+  caller_env <- parent.frame()
+
+  output_dir <- dirname(filename_base)
+  if (!identical(output_dir, ".") && !dir.exists(output_dir)) {
+    dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
   }
 
   .eval_plot <- function() {
     if (is.function(plot_expr)) {
       res <- plot_expr()
     } else {
-      res <- eval(plot_expr, envir = parent.frame())
+      res <- eval(plot_expr, envir = caller_env)
     }
 
     if (inherits(res, "grob")) {
@@ -68,19 +55,101 @@ export_plot_dual <- function(filename_base, plot_expr = NULL, width = 8, height 
     invisible(res)
   }
 
-  if (inherits(plot_expr, c("gg", "ggplot", "ggarrange", "grob")) && !grid_capture) {
+  .eval_base_plot <- function() {
+    if (is.function(plot_expr)) {
+      plot_expr()
+    } else {
+      eval(plot_expr, envir = caller_env)
+    }
+
+    invisible(NULL)
+  }
+
+  .open_svg_device <- function(filepath) {
+    if (identical(svg_backend, "svglite")) {
+
+      svglite::svglite(
+        file = filepath,
+        width = width,
+        height = height,
+        system_fonts = list(sans = font),
+        fix_text_size = FALSE,
+        bg = "white"
+      )
+
+    } else if (identical(svg_backend, "cairo")) {
+
+      if (!requireNamespace("Cairo", quietly = TRUE)) {
+        stop(
+          "The Cairo package is required when svg_backend = 'cairo'. ",
+          "Install it with: install.packages('Cairo')"
+        )
+      }
+
+      Cairo::CairoSVG(
+        filename = filepath,
+        width = width,
+        height = height,
+        bg = "white"
+      )
+
+    } else if (identical(svg_backend, "base")) {
+
+      grDevices::svg(
+        filename = filepath,
+        width = width,
+        height = height,
+        bg = "white",
+        onefile = FALSE
+      )
+    }
+  }
+
+  .save_svg_plot_object <- function(filepath, p) {
+    .open_svg_device(filepath)
+    print(p)
+    dev.off()
+  }
+
+  # Direct base graphics export path.
+  # This must not use grid.newpage(), because base graphics and grid graphics
+  # use different drawing systems.
+  if (base_graphics) {
+
+    png(
+      filename = paste0(filename_base, ".png"),
+      width = width,
+      height = height,
+      units = "in",
+      res = dpi,
+      type = "cairo",
+      bg = "white"
+    )
+    .eval_base_plot()
+    dev.off()
+
+    .open_svg_device(paste0(filename_base, ".svg"))
+    .eval_base_plot()
+    dev.off()
+
+    return(invisible(NULL))
+  }
+
+  is_gg_like <- inherits(plot_expr, c("gg", "ggplot", "ggarrange", "grob", "patchwork"))
+
+  if (is_gg_like && !grid_capture) {
 
     # PNG export for ggplot-like objects
-    ggsave(
-      paste0(filename_base, ".png"),
-      plot_expr,
+    ggplot2::ggsave(
+      filename = paste0(filename_base, ".png"),
+      plot = plot_expr,
       width = width,
       height = height,
       dpi = dpi,
       bg = "white"
     )
 
-    # SVG export with optional rasterization of heavy geometry layers
+    # SVG export with optional rasterization of heavy ggplot geometry layers
     if (rasterize && requireNamespace("ggrastr", quietly = TRUE)) {
       plot_svg <- ggrastr::rasterise(plot_expr, dpi = dpi, dev = "ragg")
     } else {
@@ -93,13 +162,13 @@ export_plot_dual <- function(filename_base, plot_expr = NULL, width = 8, height 
       plot_svg <- plot_expr
     }
 
-    .svg_device(paste0(filename_base, ".svg"), plot_svg)
+    .save_svg_plot_object(paste0(filename_base, ".svg"), plot_svg)
 
   } else {
 
-    # PNG export for base R, grid, or ComplexHeatmap-style plots
+    # PNG export for grid or ComplexHeatmap-style plots
     png(
-      paste0(filename_base, ".png"),
+      filename = paste0(filename_base, ".png"),
       width = width,
       height = height,
       units = "in",
@@ -114,8 +183,8 @@ export_plot_dual <- function(filename_base, plot_expr = NULL, width = 8, height 
     # SVG export
     if (grid_capture) {
 
-      # Important for ComplexHeatmap/grid plots:
-      # first capture the drawn plot as a grob, then redraw it into the SVG device.
+      # Capture grid-based plots first, then redraw the captured grob into the SVG device.
+      # This is useful for ComplexHeatmap and similar grid-based plots.
       plot_grob <- grid::grid.grabExpr(
         {
           grid::grid.newpage()
@@ -125,26 +194,15 @@ export_plot_dual <- function(filename_base, plot_expr = NULL, width = 8, height 
         height = height
       )
 
-      svglite::svglite(
-        paste0(filename_base, ".svg"),
-        width = width,
-        height = height,
-        system_fonts = list(sans = font),
-        fix_text_size = FALSE
-      )
+      .open_svg_device(paste0(filename_base, ".svg"))
       grid::grid.newpage()
       grid::grid.draw(plot_grob)
       dev.off()
 
     } else {
 
-      svglite::svglite(
-        paste0(filename_base, ".svg"),
-        width = width,
-        height = height,
-        system_fonts = list(sans = font),
-        fix_text_size = FALSE
-      )
+      # Direct SVG export for grid-like plotting functions or expressions.
+      .open_svg_device(paste0(filename_base, ".svg"))
       grid::grid.newpage()
       .eval_plot()
       dev.off()
@@ -153,5 +211,3 @@ export_plot_dual <- function(filename_base, plot_expr = NULL, width = 8, height 
 
   invisible(NULL)
 }
-
-
