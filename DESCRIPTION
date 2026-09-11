@@ -1,6 +1,6 @@
 Package: ekbSeq
 Title: Collection of functions to facilitate NGS analyses
-Version: 0.5.1
+Version: 0.5.2
 Authors@R: 
     person(given = "Marc",
            family = "Bender",
@@ -31,7 +31,8 @@ Imports:
 	ggsci,
         goseq,
         magrittr,
-	org.Hs.eg.db,
+        Matrix,
+   	org.Hs.eg.db,
 	plotly,
 	rlang,
         rrvgo,
@@ -39,6 +40,8 @@ Imports:
 	openxlsx,
 	scales,
 	scCustomize,
+	Seurat,
+    	SeuratObject,
 	S4Vectors,
 	stats,
 	stringr,
