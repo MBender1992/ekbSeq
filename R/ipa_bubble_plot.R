@@ -78,6 +78,7 @@ ipa_bubble_plot <- function(
     name_label = "Term",
     rotate_x = FALSE
 ) {
+  .legacy_api_message("ipa_bubble_plot", "plot_enrichment_bubble")
   # Defensive: check columns exist
   stopifnot(all(c(name_col, score_col, pval_col, genes_col) %in% colnames(df)))
 

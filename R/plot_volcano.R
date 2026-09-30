@@ -32,6 +32,7 @@
 #'
 plot_volcano <- function(results, nlabel = 30, title = "", pointsize = 2, labSize = 4,
                          xlim = NULL, ylim = NULL, plot.signif = TRUE, show.genes = NULL, pThres = 0.05, lfcThres = 1, ...) {
+  .check_columns(results, c("log2FoldChange", "padj", "SYMBOL"))
   log2FoldChange <- NULL
   padj <- NULL
 
@@ -46,12 +47,18 @@ plot_volcano <- function(results, nlabel = 30, title = "", pointsize = 2, labSiz
     head(nlabel)
 
   if(is.null(xlim)){
-    max_x <- max(results$log2FoldChange, na.rm = T)
+    finite_fc <- results$log2FoldChange[is.finite(results$log2FoldChange)]
+    if (!length(finite_fc)) stop("No finite log2 fold changes are available for the volcano plot.")
+    max_x <- max(abs(finite_fc))
+    if (max_x == 0) max_x <- 1
     xlim <- c(-max_x, max_x)
   }
 
   if(is.null(ylim)){
-    max_y <- max(-log10(min(results$padj, na.rm = T)))
+    finite_p <- results$padj[is.finite(results$padj) & results$padj > 0]
+    if (!length(finite_p)) stop("No finite positive adjusted p-values are available for the volcano plot.")
+    max_y <- -log10(min(finite_p))
+    if (max_y <= 0) max_y <- 1
     ylim <- c(-0.5, max_y)
   }
 

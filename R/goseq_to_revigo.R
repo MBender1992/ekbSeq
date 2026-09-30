@@ -30,6 +30,7 @@
 #' @export
 
 goseq_to_revigo <- function(gene.list, genome, identifier = "ensGene", ont = "BP", sim.thres = 0.7, pval.thres = 0.05) {
+  .legacy_api_message("goseq_to_revigo", "enrich_goseq")
   goseqOnt <- paste("GO:", ont, sep = "")
   pwf <- nullp(gene.list, genome, identifier)
   goResults <- goseq(pwf, genome, identifier, test.cats = c(goseqOnt))

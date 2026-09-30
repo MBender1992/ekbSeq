@@ -31,6 +31,7 @@ plot_tradeSeq_GO <- function(res,
                              pval_thresh = 0.05, 
                              ont = "BP", 
                              simplify_cutoff = 0.7) {
+  .legacy_api_message("plot_tradeSeq_GO", "plot_enrichment_pair")
   # Extract correct columns based on comparison name
   name_split <- unlist(strsplit(comparison_name, " "))
   str1 <- str_extract(name_split[1], "\\d+")

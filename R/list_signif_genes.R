@@ -9,6 +9,7 @@
 #' @export
 
 list_signif_genes <- function(list, p.threshold = 0.05, lfc.threshold = 0, direction = c("greater", "lesser")){
+  .legacy_api_message("list_signif_genes", "extract_significant_genes")
   lapply(1:length(list), function(x){
     tmp <- list[[x]]
     if(direction == "greater"){

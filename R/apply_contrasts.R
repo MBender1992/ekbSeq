@@ -50,9 +50,9 @@
 #'                        annObj = annotation_df, shrink = TRUE, path = "results/")
 #' }
 #'
-#' @export
+#' @noRd
 
-apply_contrasts <- function(dds, trt, ctrl, lfcThres = 0, pThres = 0.05, condition = "condition", annObj = NULL, shrink = FALSE, path = NULL) {
+.legacy_frozen_apply_contrasts <- function(dds, trt, ctrl, lfcThres = 0, pThres = 0.05, condition = "condition", annObj = NULL, shrink = FALSE, path = NULL) {
   res <- results(dds, lfcThreshold = lfcThres, alpha = pThres,
                  contrast = contraster(dds,
                                        group1 = list(c(condition, trt)),

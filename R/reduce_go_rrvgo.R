@@ -28,6 +28,7 @@
 #' @export
 
 reduce_go_rrvgo <- function(ego_obj, ont = "BP", orgdb = "org.Hs.eg.db", sim.thres = 0.7){
+  .legacy_api_message("reduce_go_rrvgo", "reduce_go_terms")
   enriched_genes <- NULL
   all_genes <- NULL
   GeneRatio <- NULL

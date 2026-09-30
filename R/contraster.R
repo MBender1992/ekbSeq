@@ -6,9 +6,9 @@
 #' @param group1 list of character vectors each with 2 or more items
 #' @param group2 list of character vectors each with 2 or more items
 #' @param weighted logical indicating whether weighted contrasts should be applied. Default is FALSE.
-#' @export
+#' @noRd
 
-contraster <- function(dds, group1, group2, weighted = F){
+.legacy_frozen_contraster <- function(dds, group1, group2, weighted = F){
 
   mod_mat <- stats::model.matrix(DESeq2::design(dds), SummarizedExperiment::colData(dds))
 

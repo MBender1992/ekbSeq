@@ -13,6 +13,7 @@
 #' @export
 
 plot_go_clusters <- function(gene.list, showCategory = 5, sim.thres = 0.7, sym.colors = FALSE, return.res = FALSE,  font.size = 12, pvalueCutoff = 0.05){
+  .legacy_api_message("plot_go_clusters", "enrich_go_clusters")
   term <- NULL
 
   names <- str_remove(deparse(substitute(gene.list)), "ls_")

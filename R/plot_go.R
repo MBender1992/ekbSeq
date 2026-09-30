@@ -14,6 +14,7 @@
 #' @export
 
 plot_go <- function(genes, showCategory = 20, sim.thres = 0.7, sym.colors = FALSE, return.res = FALSE, font.size = 12, pvalueCutoff = 0.05, path){
+  .legacy_api_message("plot_go", "enrich_go_terms")
   term <- NULL
 
   names <- str_remove(deparse(substitute(genes)), "_genes")
