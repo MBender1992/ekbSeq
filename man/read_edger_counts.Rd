@@ -11,6 +11,8 @@ read_edgeR_counts(counts.file)
 }
 \arguments{
 \item{file}{CSV file in the historical edgeR layout.}
+
+\item{counts.file}{Legacy CSV file argument.}
 }
 \value{
 Numeric data frame with genes in rows and samples in columns.

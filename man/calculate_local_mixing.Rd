@@ -28,6 +28,8 @@ calculate_mixing_metric(
 \item{reduction}{Reduction containing at least two dimensions.}
 
 \item{k}{Neighbors excluding each focal cell.}
+
+\item{seurat_obj}{Legacy Seurat object argument.}
 }
 \value{
 One numeric mean inverse Simpson diversity.

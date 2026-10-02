@@ -6,6 +6,10 @@ contraster <- function(dds, group1, group2, weighted = FALSE) {
 }
 
 #' @rdname deseq_contrast
+#' @param trt,ctrl Legacy treatment and control labels.
+#' @param lfcThres,pThres Legacy log2 fold-change and adjusted p-value thresholds.
+#' @param annObj Legacy annotation data frame.
+#' @param path Legacy output path used when writing shrunken annotated results.
 #' @export
 apply_contrasts <- function(dds, trt, ctrl, lfcThres = 0, pThres = 0.05,
                             condition = "condition", annObj = NULL, shrink = FALSE,
@@ -24,6 +28,7 @@ apply_contrasts <- function(dds, trt, ctrl, lfcThres = 0, pThres = 0.05,
 }
 
 #' @rdname read_edger_counts
+#' @param counts.file Legacy CSV file argument.
 #' @export
 read_edgeR_counts <- function(counts.file) {
   .legacy_api_message("read_edgeR_counts", "read_edger_counts")
@@ -31,6 +36,7 @@ read_edgeR_counts <- function(counts.file) {
 }
 
 #' @rdname plot_transcript_distribution
+#' @param anno.col Legacy annotation-column argument.
 #' @export
 plot_transcript_dist <- function(data, anno.col) {
   .legacy_api_message("plot_transcript_dist", "plot_transcript_distribution")
@@ -38,6 +44,7 @@ plot_transcript_dist <- function(data, anno.col) {
 }
 
 #' @rdname calculate_local_mixing
+#' @param seurat_obj Legacy Seurat object argument.
 #' @export
 calculate_mixing_metric <- function(seurat_obj, group_by = "sample_id",
                                     reduction = "umap.unintegrated", k = 50) {
@@ -46,6 +53,7 @@ calculate_mixing_metric <- function(seurat_obj, group_by = "sample_id",
 }
 
 #' @rdname screen_cluster_resolutions
+#' @param seurat_obj Legacy Seurat object argument.
 #' @param outdir Legacy figure output directory.
 #' @export
 cluster_resolution_clustering <- function(seurat_obj, outdir,
@@ -71,6 +79,7 @@ cluster_resolution_clustering <- function(seurat_obj, outdir,
 }
 
 #' @rdname find_resolution_markers
+#' @param seurat_obj Legacy Seurat object argument.
 #' @export
 cluster_resolution_markers <- function(seurat_obj, res_cols = NULL,
     remove_lncRNA = TRUE, min_pct = 0.1, logfc_threshold = 0.25) {
@@ -81,6 +90,8 @@ cluster_resolution_markers <- function(seurat_obj, res_cols = NULL,
 }
 
 #' @rdname plot_sc_qc_ridge
+#' @param seurat.obj Legacy Seurat object argument.
+#' @param upper.xlim Legacy upper x-axis display limit.
 #' @export
 custom_RidgePlot <- function(seurat.obj, metric, upper.xlim = NULL) {
   .legacy_api_message("custom_RidgePlot", "plot_sc_qc_ridge")
@@ -89,6 +100,10 @@ custom_RidgePlot <- function(seurat.obj, metric, upper.xlim = NULL) {
 }
 
 #' @rdname plot_marker_umap
+#' @param seurat.obj Legacy Seurat object; when NULL, `integrated_seurat` is read from the calling environment.
+#' @param group.by Legacy metadata grouping columns.
+#' @param label.size Legacy cluster-label size.
+#' @param feature.pt.size,cluster.pt.size Legacy feature and cluster point sizes.
 #' @export
 plot_markers_UMAP <- function(features, seurat.obj = NULL,
                               group.by = c("timepoint", "harmony_clusters"),
@@ -105,6 +120,7 @@ plot_markers_UMAP <- function(features, seurat.obj = NULL,
 }
 
 #' @rdname plot_marker_summary
+#' @param seurat.obj Legacy Seurat object; when NULL, `integrated_seurat` is read from the calling environment.
 #' @export
 plot_combined_markers <- function(features, seurat.obj = NULL, downsample = TRUE) {
   .legacy_api_message("plot_combined_markers", "plot_marker_summary")
@@ -117,6 +133,7 @@ plot_combined_markers <- function(features, seurat.obj = NULL, downsample = TRUE
 }
 
 #' @rdname plot_tradeseq_patterns
+#' @param plot_df Legacy tradeSeq plotting data frame.
 #' @export
 plot_pattern_clusters_tradeseq <- function(plot_df, collapse = FALSE,
                                             alpha = 0.7, colors, nrow = NULL,
@@ -135,6 +152,12 @@ prepare_go_df_list <- function(go_results, go_results_simplified = NULL) {
 }
 
 #' @rdname estimate_pseudotime_threshold
+#' @param plot_type Legacy plot type, either `scatter` or `boxplot`.
+#' @param timepoint_col Metadata column used for boxplot grouping.
+#' @param exclude_timepoints Optional timepoints excluded from boxplots.
+#' @param pt_color,fit_color,vline_color Legacy point, GAM-fit, and threshold-line colors.
+#' @param pt_alpha,pt_size Legacy point opacity and size.
+#' @param xlab,ylab Optional axis labels.
 #' @export
 plot_pseudotime <- function(data, pseudotime_col, score_col = NULL,
                             plot_type = c("scatter", "boxplot"),
@@ -162,6 +185,12 @@ plot_pseudotime <- function(data, pseudotime_col, score_col = NULL,
 }
 
 #' @rdname compare_expression_sets
+#' @param dds Legacy DESeqDataSet providing counts and `cell` metadata.
+#' @param results_object Legacy differential-expression result table.
+#' @param pThres Legacy adjusted p-value threshold.
+#' @param biotype_filter Optional legacy biotype filter.
+#' @param output_dir Legacy directory for exported gene-set CSV files.
+#' @param plot_title Optional legacy Venn-plot title.
 #' @export
 extract_and_plot_venn <- function(dds, results_object, pThres = 0.05,
                                   expression_threshold = 1, biotype_filter = NULL,
@@ -198,7 +227,7 @@ extract_and_plot_venn <- function(dds, results_object, pThres = 0.05,
   n_diff <- sum(significant)
   n_venn <- sum(lengths(sets$exclusive)) + length(sets$shared)
   caption <- paste0(n_diff, " differentially expressed genes.\n",
-    "Exclusive genes defined as average expression ≤ ", expression_threshold,
+    "Exclusive genes defined as average expression \u2264 ", expression_threshold,
     " counts in one cell type and > ", expression_threshold,
     " in the other.\n", n_diff - n_venn,
     " genes were excluded due to low expression in both.")
@@ -206,6 +235,11 @@ extract_and_plot_venn <- function(dds, results_object, pThres = 0.05,
 }
 
 #' @rdname plot_bulk_expression
+#' @param vsd.obj Legacy variance-stabilized expression object.
+#' @param results.object Legacy annotated differential-expression table.
+#' @param merge.plots Legacy switch between faceted and merged plotting.
+#' @param p.size Legacy significance-label size.
+#' @param sig.anno Legacy significance annotation mode (`stars` or `padj`).
 #' @export
 plot_control_expression_comparison <- function(vsd.obj, results.object,
     genes, nrow = NULL, ncol = NULL, factorize = FALSE,
@@ -216,6 +250,10 @@ plot_control_expression_comparison <- function(vsd.obj, results.object,
 }
 
 #' @rdname plot_de_heatmap
+#' @param dds Legacy DESeqDataSet retained for interface compatibility.
+#' @param vsd Legacy variance-stabilized expression object.
+#' @param results_object Legacy annotated differential-expression table.
+#' @param biotype_filter Optional legacy biotype filter.
 #' @export
 plot_biotype_heatmap <- function(dds, vsd, results_object,
     biotype_filter = NULL, heatmap_fontsize = 18,
@@ -227,6 +265,10 @@ plot_biotype_heatmap <- function(dds, vsd, results_object,
 }
 
 #' @rdname plot_enrichment_bubble
+#' @param df Legacy enrichment data frame.
+#' @param name_col Legacy term-name column.
+#' @param pval_col Legacy p-value/FDR column.
+#' @param color_scale Legacy low/high color vector.
 #' @export
 bubble_plot_clusterprofiler_style <- function(df, name_col,
     score_col = "GeneRatio", pval_col = "p.adjust", genes_col = "geneID",
@@ -238,6 +280,7 @@ bubble_plot_clusterprofiler_style <- function(df, name_col,
 }
 
 #' @rdname plot_enrichment_pair
+#' @param enrich_res Legacy enrichment-result list.
 #' @export
 plot_enrich_dotpair <- function(enrich_res, type = c("GO", "KEGG"),
                                 show_category = 15, title_prefix = NULL,
@@ -248,7 +291,20 @@ plot_enrich_dotpair <- function(enrich_res, type = c("GO", "KEGG"),
                        font_size = font_size)
 }
 
-#' @rdname plot_ordered_violin
+#' Plot a score as violins ordered by group median
+#'
+#' Orders metadata groups by the median of a selected score and draws the
+#' historical scCustomize violin grammar used by UVDHDS analyses.
+#' @param seurat_obj Seurat object containing the score and grouping metadata.
+#' @param score_name Metadata score or feature to plot.
+#' @param group_by Metadata column defining groups.
+#' @param pt.size Point size passed to `scCustomize::VlnPlot_scCustom()`.
+#' @param alpha Point opacity passed to `scCustomize::VlnPlot_scCustom()`.
+#' @param font_size Base font size for the classic theme.
+#' @param rotate_x Logical; rotate x-axis labels by 45 degrees.
+#' @param cluster_colors Optional named vector of group fill colors.
+#' @param ... Additional arguments passed to `scCustomize::VlnPlot_scCustom()`.
+#' @return A ggplot object with groups ordered by median score.
 #' @export
 plot_ordered_violin <- function(seurat_obj, score_name = "DifferentiationScore_UCell",
     group_by = "harmony_clusters", pt.size = 0.1, alpha = 0.05,
@@ -270,6 +326,11 @@ plot_ordered_violin <- function(seurat_obj, score_name = "DifferentiationScore_U
 }
 
 #' @rdname analyze_cluster_markers
+#' @param seurat_obj Legacy Seurat object used for the optional marker heatmap.
+#' @param colors Legacy cluster palette.
+#' @param plot_heatmap Logical; include the legacy marker heatmap.
+#' @param simplify_cutoff Legacy GO simplification cutoff.
+#' @param showCategory Number of GO categories displayed by the legacy plot.
 #' @export
 cluster_marker_go_analysis <- function(seurat_obj, markers,
     colors = scCustomize::DiscretePalette_scCustomize(num_colors = 36, palette = "polychrome"),

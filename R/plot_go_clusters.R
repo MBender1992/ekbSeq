@@ -18,7 +18,7 @@ plot_go_clusters <- function(gene.list, showCategory = 5, sim.thres = 0.7, sym.c
 
   names <- str_remove(deparse(substitute(gene.list)), "ls_")
   ## calculate clustered pathways
-  ck <- compareCluster(geneCluster = gene.list, fun = enrichGO, ont = "BP", keyType = "ENTREZID", OrgDb = org.Hs.eg.db, pvalueCutoff = pvalueCutoff)
+  ck <- compareCluster(geneClusters = gene.list, fun = enrichGO, ont = "BP", keyType = "ENTREZID", OrgDb = org.Hs.eg.db, pvalueCutoff = pvalueCutoff)
   ck <- enrichplot::pairwise_termsim(ck)
   ck <- setReadable(ck, OrgDb = org.Hs.eg.db, keyType="ENTREZID")
   simMatrix <- calculateSimMatrix(ck@compareClusterResult$ID, orgdb = "org.Hs.eg.db", ont = "BP", method = "Rel")

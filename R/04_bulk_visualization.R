@@ -9,7 +9,7 @@ plot_transcript_distribution <- function(data, annotation, ylab = "Number of tra
   .require_package("ggplot2")
   .check_columns(data, annotation)
   counts <- as.data.frame(table(data[[annotation]]))
-  counts$Var1 <- reorder(counts$Var1, counts$Freq, decreasing = TRUE)
+  counts$Var1 <- stats::reorder(counts$Var1, counts$Freq, decreasing = TRUE)
   if (is.null(colors)) colors <- rev(grDevices::colorRampPalette(
     c("#F7FBFF", "#C6DBEF", "#6BAED6", "#2171B5", "#08306B"))(
       length(unique(data[[annotation]]))))
@@ -136,7 +136,7 @@ plot_de_heatmap <- function(expression, genes, annotation = NULL,
   if (!all(genes %in% rownames(values))) stop("All genes must be present in the expression matrix.")
   values <- values[genes, , drop = FALSE]
   scaled <- t(scale(t(values)))
-  scaled <- scaled[complete.cases(scaled) &
+  scaled <- scaled[stats::complete.cases(scaled) &
                      rowSums(is.infinite(scaled)) == 0, , drop = FALSE]
   if (!nrow(scaled)) stop("No finite scaled expression rows remain.")
   if (!is.null(gene_labels)) {

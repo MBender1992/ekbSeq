@@ -33,6 +33,8 @@ cluster_resolution_markers(
 \item{remove_lncRNA}{Whether to remove legacy automated gene names.}
 
 \item{min_pct, logfc_threshold}{Marker selection thresholds.}
+
+\item{seurat_obj}{Legacy Seurat object argument.}
 }
 \value{
 Named list of Seurat marker data frames.

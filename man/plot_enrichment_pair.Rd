@@ -32,6 +32,8 @@ plot_enrich_dotpair(
 \item{title_prefix}{Optional title prefix.}
 
 \item{font_size}{Dotplot font size.}
+
+\item{enrich_res}{Legacy enrichment-result list.}
 }
 \value{
 ggarrange plot; empty directions are shown as blank labeled panels.

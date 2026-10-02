@@ -52,6 +52,16 @@ plot_control_expression_comparison(
 \item{significance}{Optional table with \code{gene} and \code{label} columns.}
 
 \item{factorize}{Preserve the supplied gene order.}
+
+\item{vsd.obj}{Legacy variance-stabilized expression object.}
+
+\item{results.object}{Legacy annotated differential-expression table.}
+
+\item{merge.plots}{Legacy switch between faceted and merged plotting.}
+
+\item{p.size}{Legacy significance-label size.}
+
+\item{sig.anno}{Legacy significance annotation mode (\code{stars} or \code{padj}).}
 }
 \value{
 ggplot expression plot.

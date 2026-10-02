@@ -23,6 +23,8 @@ plot_transcript_dist(data, anno.col)
 \item{ylab}{Optional descriptive y-axis label.}
 
 \item{colors}{Optional palette, recycled over classes.}
+
+\item{anno.col}{Legacy annotation-column argument.}
 }
 \value{
 ggplot bar chart.

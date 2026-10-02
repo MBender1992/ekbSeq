@@ -1,5 +1,6 @@
-# ekbSeq 1.0.0 candidate
+# ekbSeq 0.99.2
 
+- Release-candidate cleanup after the validated 0.99.x refactor: R CMD check documentation, portability, and NSE notes were addressed without changing validated scientific behavior.
 - Split reusable sequencing helpers into bulk, enrichment, single-cell and
   export source modules.
 - Kept the established pseudobulk DE and dual PNG/SVG export interfaces.

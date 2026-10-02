@@ -25,6 +25,16 @@ cluster_marker_go_analysis(
 \item{n}{Top genes per cluster.}
 
 \item{remove_pseudogenes}{Remove historical automated gene prefixes.}
+
+\item{seurat_obj}{Legacy Seurat object used for the optional marker heatmap.}
+
+\item{colors}{Legacy cluster palette.}
+
+\item{plot_heatmap}{Logical; include the legacy marker heatmap.}
+
+\item{simplify_cutoff}{Legacy GO simplification cutoff.}
+
+\item{showCategory}{Number of GO categories displayed by the legacy plot.}
 }
 \value{
 Named list containing \code{top_markers}.

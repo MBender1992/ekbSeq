@@ -31,6 +31,8 @@ cluster_resolution_clustering(
 
 \item{prefix}{Resolution metadata prefix for discovery.}
 
+\item{seurat_obj}{Legacy Seurat object argument.}
+
 \item{outdir}{Legacy figure output directory.}
 }
 \value{

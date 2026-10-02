@@ -100,7 +100,7 @@ plot_pseudotime_score <- function(data, pseudotime_col, score_col, threshold,
 
     p <- ggplot2::ggplot(plotted, ggplot2::aes(x = .data[[pseudotime_col]], y = .data[[score_col]])) +
       ggrastr::geom_point_rast(color = pt_color, alpha = pt_alpha, size = pt_size) +
-      ggplot2::geom_smooth(method = "gam", formula = smooth_formula,
+      ggplot2::geom_smooth(method = mgcv::gam, formula = smooth_formula,
                            color = fit_color, fill = fit_color, alpha = 0.15) +
       ggplot2::geom_vline(xintercept = threshold, lty = 2, color = vline_color,
                           linewidth = 0.6) +

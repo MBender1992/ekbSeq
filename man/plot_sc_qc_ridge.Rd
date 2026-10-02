@@ -18,6 +18,10 @@ custom_RidgePlot(seurat.obj, metric, upper.xlim = NULL)
 \item{upper_xlim}{Optional upper display limit.}
 
 \item{colors}{Optional named palette for the identities.}
+
+\item{seurat.obj}{Legacy Seurat object argument.}
+
+\item{upper.xlim}{Legacy upper x-axis display limit.}
 }
 \value{
 ggplot ridge plot with a median reference line.

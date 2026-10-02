@@ -66,7 +66,7 @@
   if (!length(sig_genes)) stop("No genes found for specified biotype filter.")
   mat <- SummarizedExperiment::assay(vsd)[sig_genes, , drop = FALSE]
   datScaled <- t(scale(t(mat)))
-  datScaled <- datScaled[complete.cases(datScaled) &
+  datScaled <- datScaled[stats::complete.cases(datScaled) &
                            rowSums(is.infinite(datScaled)) == 0, , drop = FALSE]
   anno_df <- as.data.frame(SummarizedExperiment::colData(vsd)[, c("cell", "donor")])
   colnames(anno_df) <- c("Cell_type", "Donor")
@@ -110,7 +110,7 @@
 .legacy_frozen_plot_transcript_dist <- function(data, anno.col) {
   n_cols <- length(unique(data[[anno.col]]))
   frequency <- as.data.frame(table(data[[anno.col]]))
-  frequency$Var1 <- reorder(frequency$Var1, frequency$Freq, decreasing = TRUE)
+  frequency$Var1 <- stats::reorder(frequency$Var1, frequency$Freq, decreasing = TRUE)
   ggplot2::ggplot(frequency, ggplot2::aes(x = .data$Var1, y = .data$Freq,
                                          fill = .data$Var1)) +
     ggplot2::geom_bar(stat = "identity", position = ggplot2::position_dodge(),
@@ -136,7 +136,10 @@
          ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45,
                           vjust = 1, hjust = 1),
                         plot.title = ggplot2::element_text(hjust = 0.5, face = "bold")),
-         ggplot2::guides(x = "prism_offset", y = "prism_offset")) +
+         ggplot2::guides(
+           x = ggprism::guide_prism_offset(),
+           y = ggprism::guide_prism_offset()
+         )) +
     ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank()) +
     ggplot2::geom_vline(xintercept = stats::median(metadata[[metric]]),
                         size = 0.9, lty = 1, color = "darkred")
@@ -145,49 +148,49 @@
 
 
 .legacy_frozen_plot_control_expression_comparison <- function(
-    vsd.obj, 
-    results.object, 
-    genes, 
-    nrow = NULL, 
+    vsd.obj,
+    results.object,
+    genes,
+    nrow = NULL,
     ncol = NULL,
     factorize = FALSE,
     merge.plots = FALSE,
-    p.size = 5, 
+    p.size = 5,
     sig.anno = c("stars", "padj")
 ) {
-  
+
   sig.anno <- match.arg(sig.anno)
-  
+
   ## Extract expression matrix
   vsd_counts <- SummarizedExperiment::assay(vsd.obj)
   metadata <- SummarizedExperiment::colData(vsd.obj)
-  
+
   ## Map ENSEMBL IDs to SYMBOLs
-  ensembl_to_symbol <- results.object %>% 
-    dplyr::filter(SYMBOL %in% genes) %>% 
+  ensembl_to_symbol <- results.object %>%
+    dplyr::filter(SYMBOL %in% genes) %>%
     dplyr::select(ENSEMBL, SYMBOL) %>%
     dplyr::distinct()
-  
+
   if(any(colnames(vsd_counts) != metadata$sample) & all(toupper(colnames(vsd_counts)) == toupper(metadata$ID))){
     colnames(vsd_counts) <- metadata$sample
   } else if(any(colnames(vsd_counts) != metadata$sample) & any(toupper(colnames(vsd_counts)) != toupper(metadata$ID))){
     stop("The column names of the vsd count matrix are not identical to the metadata IDs.")
   }
-  
+
   ## Extract relevant VSD rows
   gene_rows <- which(rownames(vsd_counts) %in% ensembl_to_symbol$ENSEMBL)
   df_expr <- t(vsd_counts[gene_rows, ]) %>%
     as.data.frame() %>%
-    tibble::rownames_to_column("sample") 
-  
+    tibble::rownames_to_column("sample")
+
   ## Rename columns with SYMBOL
   colnames(df_expr)[-1] <- ensembl_to_symbol$SYMBOL[match(colnames(df_expr)[-1], ensembl_to_symbol$ENSEMBL)]
-  
+
   ## Long format
   df_long <- df_expr %>%
-    tidyr::pivot_longer(cols = -sample, names_to = "gene", values_to = "vsd") %>% 
+    tidyr::pivot_longer(cols = -sample, names_to = "gene", values_to = "vsd") %>%
     dplyr::left_join(as.data.frame(metadata), by = "sample")
-  
+
  sig_annotations <- results.object %>%
     dplyr::filter(SYMBOL %in% genes) %>%
     dplyr::mutate(
@@ -205,15 +208,15 @@
     ) %>%
     dplyr::select(SYMBOL, label) %>%
     dplyr::distinct()
-  
+
   df_long <- df_long %>%
     dplyr::left_join(sig_annotations, by = c("gene" = "SYMBOL"))
-  
+
   if(factorize == TRUE){
     df_long <-  df_long %>%
       dplyr::mutate(gene = factor(gene, levels = genes))
   }
-  
+
   ## Universal ggplot components
   fill_vals <- c("DSC" = "#CD534CFF", "Melanocytes" = "#0073C2FF")
   text_anno <- geom_text(
@@ -221,7 +224,7 @@
     aes(label = label, x = if(merge.plots) gene else 2, y = Inf),
     vjust = 1.2, inherit.aes = FALSE, size = p.size
   )
-  
+
   ## Construct plot depending on 'merge'
   if (!merge.plots) {
     p <- ggplot(df_long, aes(x = cell, y = vsd, fill = cell)) +
@@ -231,12 +234,12 @@
   } else {
     p <- ggplot(df_long, aes(x = gene, y = vsd, fill = cell)) +
       geom_boxplot(alpha = 0.6, outlier.shape = NA, width = 0.5, color = "black", position = position_dodge(width = 0.7)) +
-      geom_jitter(shape = 21, stroke = 0.3, alpha = 0.8, color = "black", 
+      geom_jitter(shape = 21, stroke = 0.3, alpha = 0.8, color = "black",
                   position = position_dodge(width = 0.7)) +
       geom_vline(xintercept = seq(1.5, length(unique(df_long$gene)) - 0.5, by = 1), linetype = "dashed", color = "gray40") +
       xlab("Gene")
   }
-  
+
   ## Add universal ggplot components
   p <- p +
     text_anno +
@@ -279,7 +282,7 @@
 
   stopifnot(is.data.frame(df))
   stopifnot(all(c(name_col, score_col, pval_col, genes_col) %in% colnames(df)))
-  
+
   # helper to parse a possible ratio string like "5/200" -> numeric 5/200
   parse_ratio_safe <- function(x) {
     # if already numeric, return as.numeric
@@ -306,7 +309,7 @@
       out
     }
   }
-  
+
   plot_df <- df %>%
     dplyr::mutate(
       # compute gene counts from genes_col (split on "/" or ",")
@@ -321,32 +324,32 @@
       name = as.character(.data[[name_col]])
     ) %>%
     dplyr::filter(!is.na(score), !is.na(pval))
-  
+
   if (nrow(plot_df) == 0) {
     stop("No rows with non-missing score and p-value after coercion.")
   }
-  
+
   # Sort and select top_n by p-value ascending
   plot_df <- plot_df %>%
     dplyr::arrange(pval) %>%
     dplyr::slice(seq_len(min(top_n, nrow(.))))
-  
+
   # If no gene counts computed (all NA), try to compute from gene column again more robustly:
   if (all(is.na(plot_df$n_genes))) {
     plot_df$n_genes <- sapply(strsplit(as.character(plot_df[[genes_col]]), "/|,"), function(v) if (length(v) == 1 && v == "") 0L else length(v))
   }
-  
+
   # Check if all scores are negative (flip axis if true) - kept for consistency with clusterProfiler-style
   all_negative <- all(plot_df$score < 0, na.rm = TRUE)
-  
+
   # Reorder y-axis so items are ordered by score (lowest at top). This mirrors clusterProfiler visuals.
   plot_df$name <- factor(plot_df$name, levels = plot_df$name[order(plot_df$score, decreasing = FALSE)])
-  
+
   if (all_negative) {
     # if all negative, reverse so most negative (smallest) is at top
     plot_df$name <- factor(plot_df$name, levels = plot_df$name[order(plot_df$score, decreasing = TRUE)])
   }
-  
+
   p <- ggplot2::ggplot(plot_df, ggplot2::aes(x = .data$score, y = .data$name, size = .data$n_genes, color = .data$pval)) +
     ggplot2::geom_point(alpha = 0.8) +
     ggplot2::scale_size_continuous(range = size_range, name = "Gene count") +
@@ -359,13 +362,13 @@
     ) +
     ggplot2::theme_bw(base_size = 14) +
     ggplot2::theme(axis.text.y = ggplot2::element_text(size = 9))
-  
+
   if (all_negative) {
     p <- p + ggplot2::scale_x_reverse()
   }
   if (rotate_x) {
     p <- p + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, vjust = 1))
   }
-  
+
   return(p)
 }

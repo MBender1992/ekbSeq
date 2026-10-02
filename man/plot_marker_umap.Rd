@@ -56,6 +56,14 @@ plot_markers_UMAP(
 \item{raster_dpi}{Raster resolution for feature points.}
 
 \item{widths}{Relative widths of cluster and feature panels.}
+
+\item{seurat.obj}{Legacy Seurat object; when NULL, \code{integrated_seurat} is read from the calling environment.}
+
+\item{group.by}{Legacy metadata grouping columns.}
+
+\item{label.size}{Legacy cluster-label size.}
+
+\item{feature.pt.size, cluster.pt.size}{Legacy feature and cluster point sizes.}
 }
 \value{
 Arranged ggplot object.

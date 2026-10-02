@@ -43,6 +43,14 @@ treatment divided by control.}
 workflow when it has one row per result.}
 
 \item{shrink}{Use \code{ashr} shrinkage as in \code{apply_contrasts()}.}
+
+\item{trt, ctrl}{Legacy treatment and control labels.}
+
+\item{lfcThres, pThres}{Legacy log2 fold-change and adjusted p-value thresholds.}
+
+\item{annObj}{Legacy annotation data frame.}
+
+\item{path}{Legacy output path used when writing shrunken annotated results.}
 }
 \value{
 DESeqResults, or an annotated data frame when \code{annotation} is given.

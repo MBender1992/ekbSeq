@@ -51,6 +51,18 @@ negative slope, or the selected local \code{maximum}/\code{minimum}.}
 \item{pseudotime_range, n_grid}{Prediction range and number of grid points.}
 
 \item{lineage_assignment_col}{Metadata column with trajectory numbers.}
+
+\item{plot_type}{Legacy plot type, either \code{scatter} or \code{boxplot}.}
+
+\item{timepoint_col}{Metadata column used for boxplot grouping.}
+
+\item{exclude_timepoints}{Optional timepoints excluded from boxplots.}
+
+\item{pt_color, fit_color, vline_color}{Legacy point, GAM-fit, and threshold-line colors.}
+
+\item{pt_alpha, pt_size}{Legacy point opacity and size.}
+
+\item{xlab, ylab}{Optional axis labels.}
 }
 \value{
 A single numeric pseudotime threshold. A global extremum is used

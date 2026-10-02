@@ -34,6 +34,8 @@ plot_pattern_clusters_tradeseq(
 \item{alpha}{Point/curve transparency.}
 
 \item{nrow, ncol}{Facet dimensions.}
+
+\item{plot_df}{Legacy tradeSeq plotting data frame.}
 }
 \value{
 ggplot object; the function does not fit a tradeSeq model.

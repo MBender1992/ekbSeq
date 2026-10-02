@@ -34,3 +34,9 @@
   }
   get(name, envir = environment, inherits = TRUE)
 }
+
+# Symbols used intentionally through data masking in historical compatibility code.
+# Declaring them avoids false-positive R CMD check notes without altering legacy logic.
+utils::globalVariables(c(
+  ".", "ENSEMBL", "SYMBOL", "cell", "gene", "label", "pval", "score", "vsd"
+))

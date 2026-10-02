@@ -91,7 +91,10 @@ plot_sc_qc_ridge <- function(object, metric, upper_xlim = NULL, colors = NULL) {
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45,
         vjust = 1, hjust = 1),
         plot.title = ggplot2::element_text(hjust = 0.5, face = "bold")),
-      ggplot2::guides(x = "prism_offset", y = "prism_offset")) +
+      ggplot2::guides(
+        x = ggprism::guide_prism_offset(),
+        y = ggprism::guide_prism_offset()
+      )) +
     ggplot2::theme(legend.position = "none", axis.title.y = ggplot2::element_blank()) +
     ggplot2::geom_vline(xintercept = stats::median(object[[]][[metric]]),
       size = 0.9, lty = 1, color = "darkred")

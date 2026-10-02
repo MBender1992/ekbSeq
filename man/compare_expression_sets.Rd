@@ -40,6 +40,18 @@ count thresholds, respectively.}
 \item{biotypes}{Optional allowed biotypes.}
 
 \item{biotype_col}{Biotype column in \code{results}.}
+
+\item{dds}{Legacy DESeqDataSet providing counts and \code{cell} metadata.}
+
+\item{results_object}{Legacy differential-expression result table.}
+
+\item{pThres}{Legacy adjusted p-value threshold.}
+
+\item{biotype_filter}{Optional legacy biotype filter.}
+
+\item{output_dir}{Legacy directory for exported gene-set CSV files.}
+
+\item{plot_title}{Optional legacy Venn-plot title.}
 }
 \value{
 List \code{sets}, \code{exclusive}, and \code{shared}; no files are written.

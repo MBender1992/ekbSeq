@@ -31,6 +31,8 @@ plot_combined_markers(features, seurat.obj = NULL, downsample = TRUE)
 \item{seed}{Seed for deterministic downsampling.}
 
 \item{feature_colors}{Optional expression gradient.}
+
+\item{seurat.obj}{Legacy Seurat object; when NULL, \code{integrated_seurat} is read from the calling environment.}
 }
 \value{
 ggplot object.

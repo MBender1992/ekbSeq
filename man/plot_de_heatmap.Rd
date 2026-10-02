@@ -69,6 +69,14 @@ plot_biotype_heatmap(
 \item{clustering_distance_row, clustering_distance_column}{Clustering distances.}
 
 \item{...}{Additional ComplexHeatmap arguments.}
+
+\item{dds}{Legacy DESeqDataSet retained for interface compatibility.}
+
+\item{vsd}{Legacy variance-stabilized expression object.}
+
+\item{results_object}{Legacy annotated differential-expression table.}
+
+\item{biotype_filter}{Optional legacy biotype filter.}
 }
 \value{
 ComplexHeatmap object; call \code{ComplexHeatmap::draw()} to render.

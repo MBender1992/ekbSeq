@@ -1,6 +1,6 @@
 Package: ekbSeq
 Title: Reusable Bulk and Single-Cell Transcriptomics Analyses
-Version: 0.99.0
+Version: 1.0.0
 Authors@R: 
     person(given = "Marc",
            family = "Bender",
