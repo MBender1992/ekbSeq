@@ -15,7 +15,9 @@ plot_enrichment_bubble(
   colors = c("lightgrey", "#4292C6"),
   size_range = c(3, 10),
   name_label = "Terms",
-  rotate_x = FALSE
+  rotate_x = FALSE,
+  size_col = NULL,
+  size_label = "Gene count"
 )
 
 bubble_plot_clusterprofiler_style(
@@ -34,14 +36,29 @@ bubble_plot_clusterprofiler_style(
 \arguments{
 \item{data}{Enrichment table.}
 
-\item{term_col, score_col, p_col, genes_col}{Column names.}
+\item{term_col, score_col, p_col}{Column names containing the enrichment term,
+x-axis score and p-value/FDR used for colouring.}
 
-\item{top_n}{Maximum displayed terms.}
+\item{genes_col}{Optional column containing member identifiers. Members separated
+by "/", "," or ";" are counted and used for bubble size when \code{size_col} is NULL.}
 
-\item{colors}{Low and high colors for adjusted p-values.}
+\item{top_n}{Maximum number of displayed terms.}
+
+\item{colors}{Low and high colors for p-values.}
+
+\item{size_range}{Numeric vector defining the displayed bubble-size range.}
+
+\item{name_label}{Label used in the plot title.}
+
+\item{rotate_x}{Logical; rotate x-axis labels by 45 degrees.}
+
+\item{size_col}{Optional numeric column used directly for bubble size. Takes
+precedence over \code{genes_col}.}
+
+\item{size_label}{Legend title for bubble size.}
 }
 \value{
-ggplot object.
+A ggplot object.
 }
 \description{
 Generic bubble plot for enrichment results
