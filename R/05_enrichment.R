@@ -1,57 +1,120 @@
 #' Generic bubble plot for enrichment results
+#'
 #' @param data Enrichment table.
-#' @param term_col,score_col,p_col,genes_col Column names.
-#' @param top_n Maximum displayed terms.
-#' @param colors Low and high colors for adjusted p-values.
-#' @return ggplot object.
+#' @param term_col,score_col,p_col Column names containing the enrichment term,
+#'   x-axis score and p-value/FDR used for colouring.
+#' @param genes_col Optional column containing member identifiers. Members separated
+#'   by "/", "," or ";" are counted and used for bubble size when `size_col` is NULL.
+#' @param top_n Maximum number of displayed terms.
+#' @param colors Low and high colors for p-values.
+#' @param size_range Numeric vector defining the displayed bubble-size range.
+#' @param name_label Label used in the plot title.
+#' @param rotate_x Logical; rotate x-axis labels by 45 degrees.
+#' @param size_col Optional numeric column used directly for bubble size. Takes
+#'   precedence over `genes_col`.
+#' @param size_label Legend title for bubble size.
+#'
+#' @return A ggplot object.
 #' @export
 plot_enrichment_bubble <- function(data, term_col, score_col, p_col,
                                    genes_col = NULL, top_n = 20L,
                                    colors = c("lightgrey", "#4292C6"),
                                    size_range = c(3, 10), name_label = "Terms",
-                                   rotate_x = FALSE) {
+                                   rotate_x = FALSE, size_col = NULL,
+                                   size_label = "Gene count") {
+
   .require_package("ggplot2")
-  .check_columns(data, c(term_col, score_col, p_col, genes_col))
+  .check_columns(data, c(term_col, score_col, p_col, genes_col, size_col))
+
   if (!nrow(data)) stop("No enrichment rows to plot.")
+
   parse_score <- function(x) {
     vapply(as.character(x), function(value) {
       if (is.na(value)) return(NA_real_)
+
       pieces <- strsplit(value, "/", fixed = TRUE)[[1L]]
+
       if (length(pieces) == 2L) {
         denominator <- suppressWarnings(as.numeric(pieces[2L]))
         if (is.na(denominator) || denominator == 0) return(NA_real_)
+
         return(suppressWarnings(as.numeric(pieces[1L])) / denominator)
       }
+
       suppressWarnings(as.numeric(value))
     }, numeric(1L))
   }
+
   data$.score <- parse_score(data[[score_col]])
   data$.p <- suppressWarnings(as.numeric(data[[p_col]]))
   data$.term <- as.character(data[[term_col]])
-  data$.members <- if (is.null(genes_col)) rep(1L, nrow(data)) else
-    vapply(as.character(data[[genes_col]]), function(s) {
+
+  ## bubble size: explicit numeric column > member count > constant size
+  if (!is.null(size_col)) {
+
+    data$.members <- suppressWarnings(as.numeric(data[[size_col]]))
+
+  } else if (!is.null(genes_col)) {
+
+    data$.members <- vapply(as.character(data[[genes_col]]), function(s) {
       if (is.na(s) || !nzchar(s)) return(NA_integer_)
-      length(strsplit(s, "/|,")[[1L]])
+
+      members <- unlist(strsplit(s, "[/,;]"))
+      members <- trimws(members)
+      members <- members[nzchar(members)]
+
+      length(members)
     }, integer(1L))
-  data <- data[is.finite(data$.score) & is.finite(data$.p), , drop = FALSE]
+
+  } else {
+
+    data$.members <- rep(1L, nrow(data))
+  }
+
+  data <- data[is.finite(data$.score) & is.finite(data$.p) & is.finite(data$.members), , drop = FALSE]
+
   if (!nrow(data)) stop("No valid score/p-value pairs remain.")
+
   data <- utils::head(data[order(data$.p), , drop = FALSE], top_n)
+
   all_negative <- all(data$.score < 0, na.rm = TRUE)
   ordering <- order(data$.score, decreasing = all_negative)
   data$.term <- factor(data$.term, levels = unique(data$.term[ordering]))
-  plot <- ggplot2::ggplot(data, ggplot2::aes(x = .data$.score, y = .data$.term,
-                                     color = .data$.p, size = .data$.members)) +
+
+  plot <- ggplot2::ggplot(
+    data,
+    ggplot2::aes(
+      x = .data$.score,
+      y = .data$.term,
+      color = .data$.p,
+      size = .data$.members
+    )
+  ) +
     ggplot2::geom_point(alpha = 0.8) +
-    ggplot2::scale_size_continuous(range = size_range, name = "Gene count") +
-    ggplot2::scale_color_gradient(low = colors[1L], high = colors[2L],
-                                  name = p_col, trans = "reverse") +
-    ggplot2::labs(x = score_col, y = "",
-      title = paste("Top", min(top_n, nrow(data)), name_label)) +
+    ggplot2::scale_size_continuous(range = size_range, name = size_label) +
+    ggplot2::scale_color_gradient(
+      low = colors[1L], high = colors[2L],
+      name = p_col, trans = "reverse"
+    ) +
+    ggplot2::labs(
+      x = score_col,
+      y = "",
+      title = paste("Top", min(top_n, nrow(data)), name_label)
+    ) +
     ggplot2::theme_bw(base_size = 14) +
     ggplot2::theme(axis.text.y = ggplot2::element_text(size = 9))
-  if (all_negative) plot <- plot + ggplot2::scale_x_reverse()
-  if (rotate_x) plot <- plot + ggplot2::theme(axis.text.x = ggplot2::element_text(
-    angle = 45, hjust = 1, vjust = 1))
+
+  if (all_negative) {
+    plot <- plot + ggplot2::scale_x_reverse()
+  }
+
+  if (rotate_x) {
+    plot <- plot +
+      ggplot2::theme(
+        axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, vjust = 1)
+      )
+  }
+
   plot
 }
 
