@@ -1,13 +1,9 @@
 #' @import magrittr
-#' @import flextable
 #' @import ggplot2
-#' @import ggpubr
 #' @import ggwordcloud
 #' @import clusterProfiler
 #' @import stringr
-#' @import enrichplot
 #' @import tm
-#' @import SummarizedExperiment
 #' @importFrom rlang .data
 #' @importFrom stats as.formula setNames
 #' @importFrom org.Hs.eg.db org.Hs.eg.db
@@ -23,6 +19,9 @@
 #' @importFrom openxlsx write.xlsx
 #' @importFrom dplyr mutate filter arrange slice select left_join
 #' @importFrom EnhancedVolcano EnhancedVolcano
+#' @importFrom ggpubr ggarrange annotate_figure text_grob ggbarplot
+#' @importFrom enrichplot dotplot
+#' @importFrom SummarizedExperiment colData
 NULL
 
 

@@ -22,8 +22,8 @@ plot_tradeseq_patterns <- function(data, colors, collapse = FALSE, alpha = 0.7,
   plot <- ggplot2::ggplot(data, ggplot2::aes(x = .data$pseudotime,
                                             y = .data$expr, color = .data$lineage,
                                             group = .data$.curve))
-  plot <- if (collapse) plot + ggplot2::geom_smooth(size = 1, alpha = 0.8) else
-    plot + ggplot2::geom_line(size = 0.7, alpha = alpha)
+  plot <- if (collapse) plot + ggplot2::geom_smooth(linewidth = 1, alpha = 0.8) else
+    plot + ggplot2::geom_line(linewidth = 0.7, alpha = alpha)
   plot + ggplot2::facet_wrap(~cluster, scales = "free_y", nrow = nrow, ncol = ncol) +
     ggplot2::scale_color_manual(values = colors) +
     ggplot2::labs(title = if (collapse) "Clustered Expression Patterns Across Pseudotime" else

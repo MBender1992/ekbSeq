@@ -1,6 +1,6 @@
 Package: ekbSeq
 Title: Reusable Bulk and Single-Cell Transcriptomics Analyses
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: 
     person(given = "Marc",
            family = "Bender",
@@ -18,7 +18,6 @@ Imports:
 	DESeq2,
        	enrichplot,
 	EnhancedVolcano,
-        flextable, 
         forcats,
 	ggplot2,
 	ggwordcloud, 
@@ -65,36 +64,4 @@ Encoding: UTF-8
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.0.0
-Collate:
-    '00_utils.R'
-    '01_io.R'
-    '02_export.R'
-    '03_bulk_deseq2.R'
-    '04_bulk_visualization.R'
-    '05_enrichment.R'
-    '06_sc_qc_clustering.R'
-    '07_sc_markers.R'
-    '08_sc_trajectory.R'
-    '09_sc_tradeseq.R'
-    'apply_contrasts.R'
-    'contraster.R'
-    'do_enrichment_tradeSeq.R'
-    'export_plot_dual.R'
-    'find_markers_pseudobulk.R'
-    'goseq_to_revigo.R'
-    'high_dispersion_genes.R'
-    'ipa_bubble_plot.R'
-    'list_signif_genes.R'
-    'load_packages.R'
-    'normalize_svg_text.R'
-    'pca_plot.R'
-    'plot_3d_diffusion.R'
-    'plot_go.R'
-    'plot_go_clusters.R'
-    'plot_tradeSeq_GO.R'
-    'plot_volcano.R'
-    'plot_wordcloud.R'
-    'reduce_go_rrvgo.R'
-    'search_go.R'
-    '10_legacy_frozen_plots.R'
-    '11_compatibility_wrappers.R'
+
