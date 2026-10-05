@@ -2,3 +2,8 @@
 ^\.Rproj\.user$
 ^\.positai$
 ^\.claude$
+^COMPATIBILITY_AUDIT\.md$
+^HANDOFF\.md$
+^SPECIFICATIONS\.md$
+^\.Rhistory$
+^R/\.Rhistory$

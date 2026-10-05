@@ -14,6 +14,7 @@
 #' @export
 
 search_go <- function(enrich.res, all.res, path = getwd(), search.string = " ", fig.width = 7, fig.height = 16, flip.coords = TRUE){
+  .legacy_api_message("search_go", "filter_enrichment_terms")
   ind <- str_detect(enrich.res$Description, search.string)
   search.string <- str_replace_all(search.string, "\\|", "_")
   tbl <- enrich.res[ind,]

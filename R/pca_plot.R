@@ -15,6 +15,7 @@
 #' @export
 
 pca_plot <- function(data, pcsToUse, title = "", subtitle = "",  type = "VST", colors = NULL, shapes = NULL, pointSize = 3, textSize= 12, labelled = FALSE, intgroup){
+  .legacy_api_message("pca_plot", "plot_bulk_pca")
 
   if(is.null(colors)){
     # Get original NPG palette (10 colors)

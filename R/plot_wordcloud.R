@@ -9,6 +9,7 @@
 # library(SnowballC)
 
 plot_wordcloud <- function(text){
+  .legacy_api_message("plot_wordcloud", "plot_wordcloud")
   freq <- NULL
 
   docs <- Corpus(VectorSource(text))

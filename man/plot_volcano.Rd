@@ -31,11 +31,15 @@ Must include columns \code{log2FoldChange}, \code{padj}, and \code{SYMBOL}.}
 
 \item{labSize}{Numeric. Size of gene labels. Default is 4.}
 
-\item{xlim}{Numeric vector of length 2. X-axis limits (log2 fold change). Default is \code{c(-8, 8)}.}
+\item{xlim}{Optional numeric vector of length 2 defining the x-axis limits.
+If \code{NULL}, symmetric limits are determined automatically from finite log2 fold changes
+with valid adjusted p-values.}
 
-\item{ylim}{Numeric vector of length 2. Y-axis limits (–log10 p-value). Default is \code{c(-0.5, 100)}.}
+\item{ylim}{Optional numeric vector of length 2 defining the y-axis limits.
+If \code{NULL}, limits are determined automatically from finite positive adjusted p-values.}
 
-\item{plot.signif}{Logical indicating whether significant results should be highlighted. Default is TRUE. Can be specified together with show.genes to show significant results AND selected genes.}
+\item{plot.signif}{Logical indicating whether significant results should be highlighted. Default is TRUE.
+Can be specified together with show.genes to show significant results AND selected genes.}
 
 \item{show.genes}{Optional character vector. Additional gene symbols (from the \code{SYMBOL} column) to label,}
 
@@ -43,8 +47,7 @@ Must include columns \code{log2FoldChange}, \code{padj}, and \code{SYMBOL}.}
 
 \item{lfcThres}{Log2-fold change threshold for plotting. Default is 1.}
 
-\item{...}{additional arguments passed to the EnhancedVolcano function.
-in addition to the top up- and downregulated genes.}
+\item{...}{Additional arguments passed to the EnhancedVolcano function.}
 }
 \value{
 A ggplot2 object representing the volcano plot.
@@ -61,4 +64,5 @@ genes by adjusted p-value. You can also specify additional genes to label via \c
 \dontrun{
 plot_volcano(res, nlabel = 20, title = "IR vs Control", show.genes = c("CDKN1A", "GADD45A"))
 }
+
 }

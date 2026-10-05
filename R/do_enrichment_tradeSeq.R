@@ -24,6 +24,7 @@ do_enrichment_tradeSeq <- function(
     go_simplify = TRUE,          # NEW: add option to turn simplify on/off
     simplify_cutoff = 0.7        # How similar before merging (default 0.7)
 ) {
+  .legacy_api_message("do_enrichment_tradeSeq", "enrich_tradeseq")
 
   # Helper: Convert SYMBOL to ENTREZID
   symbol2entrez <- function(symbols, db) {
