@@ -1,30 +1,47 @@
-#' @rdname make_deseq_contrast
+#' Historical observed-design-profile contrast
+#'
+#' Legacy compatibility interface preserving the historical `contraster()`
+#' behavior. The contrast is calculated from observed model-matrix profiles and
+#' is retained only for reproducibility of historical analyses.
+#'
+#' @param dds A DESeqDataSet.
+#' @param group1,group2 Lists of factor/value selections defining the two
+#'   historical comparison groups.
+#' @param weighted Retain sample-frequency weighting. `FALSE` compares unique
+#'   observed design rows, matching the historical implementation.
+#' @return A numeric contrast vector in design-matrix coefficient order.
 #' @export
 contraster <- function(dds, group1, group2, weighted = FALSE) {
-  .legacy_api_message("contraster", "make_deseq_contrast")
-  make_deseq_contrast(dds = dds, group1 = group1, group2 = group2, weighted = weighted)
+  .legacy_api_message("contraster", "contraster")
+  .legacy_frozen_contraster(dds = dds, group1 = group1, group2 = group2, weighted = weighted)
 }
 
-#' @rdname deseq_contrast
+#' Historical DESeq2 contrast workflow
+#'
+#' Legacy compatibility interface preserving the historical `apply_contrasts()`
+#' behavior, including its observed-design-profile contrast construction,
+#' optional `ashr` shrinkage, annotation merge, and optional Excel output.
+#'
+#' For new standard factor comparisons, use `deseq_contrast()`. For interaction
+#' effects or other complex scientific contrasts, define the contrast explicitly
+#' with `DESeq2::results()`.
+#'
+#' @param dds Fitted DESeqDataSet.
 #' @param trt,ctrl Legacy treatment and control labels.
 #' @param lfcThres,pThres Legacy log2 fold-change and adjusted p-value thresholds.
+#' @param condition Legacy metadata factor name.
 #' @param annObj Legacy annotation data frame.
+#' @param shrink Apply historical `ashr` shrinkage.
 #' @param path Legacy output path used when writing shrunken annotated results.
+#' @return Historical DESeq2 result object or annotated data frame.
 #' @export
 apply_contrasts <- function(dds, trt, ctrl, lfcThres = 0, pThres = 0.05,
                             condition = "condition", annObj = NULL, shrink = FALSE,
                             path = NULL) {
   .legacy_api_message("apply_contrasts", "deseq_contrast")
-  res <- deseq_contrast(dds = dds, treatment = trt, control = ctrl,
-                        lfc_threshold = lfcThres, p_threshold = pThres,
-                        condition = condition, annotation = annObj, shrink = shrink)
-  message(if (shrink) "Output contains shrunken log fold changes." else
-            "Output contains original fold changes.")
-  if (shrink && !is.null(annObj)) {
-    .require_package("openxlsx")
-    openxlsx::write.xlsx(as.data.frame(res), paste0(path, trt, "_vs_", ctrl, "_shrunken_LFC.xlsx"))
-  }
-  res
+  .legacy_frozen_apply_contrasts(dds = dds, trt = trt, ctrl = ctrl, lfcThres = lfcThres,
+                                 pThres = pThres, condition = condition, annObj = annObj,
+                                 shrink = shrink, path = path)
 }
 
 #' @rdname read_edger_counts

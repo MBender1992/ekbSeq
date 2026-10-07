@@ -1,7 +1,7 @@
 Package: ekbSeq
 Title: Reusable Bulk and Single-Cell Transcriptomics Analyses
-Version: 1.1.0
-Authors@R: 
+Version: 1.2.0
+Authors@R:
     person(given = "Marc",
            family = "Bender",
            role = c("aut", "cre"),
@@ -10,38 +10,38 @@ Description: Reusable methods for bulk and single-cell transcriptomics,
     including differential expression contrasts, enrichment, marker
     visualization, diagnostics, and reproducible figure export. Historical
     analysis interfaces remain available for reproducibility.
-Depends: 
+Depends:
     R(>= 4.0.0)
 Imports:
-	clusterProfiler,
-	dplyr,
-	DESeq2,
-       	enrichplot,
-	EnhancedVolcano,
-        forcats,
-	ggplot2,
-	ggwordcloud, 
-	ggpubr,
-	ggsci,
-        goseq,
-        magrittr,
-        Matrix,
-   	org.Hs.eg.db,
-	rlang,
-        rrvgo,
-	rstatix,
-	openxlsx,
-	scales,
-	S4Vectors,
-	stats,
-	stringr,
-        SummarizedExperiment,
+    clusterProfiler,
+    dplyr,
+    DESeq2,
+    enrichplot,
+    EnhancedVolcano,
+    forcats,
+    ggplot2,
+    ggwordcloud,
+    ggpubr,
+    ggsci,
+    goseq,
+    magrittr,
+    Matrix,
+    org.Hs.eg.db,
+    rlang,
+    rrvgo,
+    rstatix,
+    openxlsx,
+    scales,
+    S4Vectors,
+    stats,
+    stringr,
+    SummarizedExperiment,
     svglite,
     tibble,
-        tm,
-        tidyr,
-	viridis,
-	xml2
+    tm,
+    tidyr,
+    viridis,
+    xml2
 Suggests:
     ashr,
     Cairo,
@@ -64,4 +64,3 @@ Encoding: UTF-8
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.0.0
-

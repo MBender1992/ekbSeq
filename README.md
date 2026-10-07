@@ -11,9 +11,9 @@ inside the corresponding analysis repositories.
 `ekbSeq` complements established bioinformatics packages such as DESeq2, Seurat,
 clusterProfiler and tradeSeq. It does not attempt to replace their core analysis
 frameworks. Instead, it provides reusable higher-level functionality for common
-tasks such as contrast construction, visualization, enrichment analysis,
-pseudobulk differential expression, clustering diagnostics and trajectory
-analysis.
+tasks such as differential-expression result handling, visualization, enrichment
+analysis, pseudobulk differential expression, clustering diagnostics and
+trajectory analysis.
 
 The package is designed around four main principles:
 
@@ -29,7 +29,7 @@ The package is designed around four main principles:
 `ekbSeq` currently provides functionality for:
 
 - bulk RNA-seq differential expression workflows;
-- DESeq2 contrast construction and result handling;
+- transparent DESeq2 factor contrasts and result handling;
 - transcript-level and gene-level visualization;
 - PCA and expression visualization;
 - volcano plots and differential-expression heatmaps;
@@ -78,7 +78,7 @@ library(ekbSeq)
 A specific release can be installed by supplying its Git tag:
 
 ```r
-remotes::install_github("MBender1992/ekbSeq@v1.1.0")
+remotes::install_github("MBender1992/ekbSeq@v1.2.0")
 ```
 
 This is recommended when a sequencing analysis needs to remain reproducible
@@ -103,6 +103,10 @@ Canonical functions are designed to:
 - separate computation, visualization and export where appropriate;
 - avoid hard-coded project-specific biology;
 - preserve established scientific conventions where possible.
+
+For DESeq2 contrasts, the canonical API deliberately delegates the statistical
+contrast definition to DESeq2 rather than reconstructing contrasts from observed
+sample profiles.
 
 ### Legacy compatibility API
 
@@ -140,7 +144,7 @@ R/
 ├── 07_sc_markers.R
 ├── 08_sc_trajectory.R
 ├── 09_sc_tradeseq.R
-├── 10_legacy_frozen.R
+├── 10_legacy_frozen_plots.R
 ├── 11_compatibility_wrappers.R
 └── 12_legacy_api.R
 ```
@@ -155,21 +159,50 @@ analytical domain rather than creating additional single-function source files.
 
 ## DESeq2 contrasts
 
-`ekbSeq` provides tools for constructing and evaluating DESeq2 contrasts while
-making comparison direction explicit.
-
-The main canonical functions are:
+For new analyses, the canonical contrast interface is:
 
 ```r
-make_deseq_contrast()
 deseq_contrast()
 ```
 
-`make_deseq_contrast()` constructs contrast vectors from the fitted model
-matrix.
+For a standard factor comparison such as treatment versus control,
+`deseq_contrast()` delegates directly to DESeq2 using:
 
-`deseq_contrast()` provides higher-level extraction of differential-expression
-results using an explicitly defined treatment-versus-control comparison.
+```r
+DESeq2::results(
+  dds,
+  contrast = c("condition", "treated", "control")
+)
+```
+
+For example:
+
+```r
+res <- deseq_contrast(
+  dds,
+  treatment = "treated", control = "control",
+  condition = "condition"
+)
+```
+
+With an additive design such as:
+
+```r
+DESeq2::design(dds) <- ~ batch + condition
+```
+
+this represents the treatment-versus-control effect estimated by DESeq2 while
+adjusting for `batch`. The observed distribution of treatment and control across
+batch levels is not used to redefine the biological contrast.
+
+This principle also applies to other additive adjustment variables such as
+processing, sequencing run or other nuisance covariates included in the fitted
+model.
+
+Complex scientific contrasts are intentionally not inferred by `ekbSeq`. For
+interaction effects, difference-in-differences or other model-specific
+comparisons, define the contrast explicitly with `DESeq2::results()` using the
+coefficient or contrast appropriate to the scientific question.
 
 Historical interfaces remain available:
 
@@ -178,15 +211,23 @@ contraster()
 apply_contrasts()
 ```
 
-For new analyses, the canonical functions are recommended.
+These retain the historical observed-design-profile behavior for reproducibility
+of older analyses. They are not the recommended interface for new treatment-
+versus-control analyses.
 
 ### Contrast direction
 
 The orientation of a contrast is scientifically important because it determines
 the sign of the reported log2 fold change.
 
-The canonical API therefore treats comparison direction as an explicit part of
-the analysis contract.
+For:
+
+```r
+deseq_contrast(dds, treatment = "treated", control = "control")
+```
+
+positive log2 fold changes represent higher expression in treatment than in
+control.
 
 Analyses should always document which condition represents the numerator and
 which represents the reference condition.
@@ -228,8 +269,8 @@ pca_plot()
 is retained for backwards compatibility.
 
 The canonical function is intended for reusable PCA visualization from
-transformed expression data while allowing grouping and visualization
-parameters to be defined explicitly.
+transformed expression data while allowing grouping and visualization parameters
+to be defined explicitly.
 
 ---
 
@@ -248,8 +289,7 @@ plot_volcano()
 These cover complementary use cases:
 
 - `plot_bulk_expression()` visualizes expression values for selected genes;
-- `plot_transcript_distribution()` summarizes transcript or biotype
-  distributions;
+- `plot_transcript_distribution()` summarizes transcript or biotype distributions;
 - `plot_de_heatmap()` generates differential-expression heatmaps;
 - `plot_volcano()` visualizes statistical significance and effect size.
 
@@ -294,8 +334,6 @@ plot_enrichment_bubble()
 plot_enrichment_pair()
 ```
 
----
-
 ## Selecting significant genes
 
 ```r
@@ -307,8 +345,6 @@ functional analysis.
 
 The function is intended to keep gene selection separate from enrichment and
 visualization.
-
----
 
 ## Gene Ontology enrichment
 
@@ -330,8 +366,6 @@ For RNA-seq enrichment workflows that account for gene-length bias:
 enrich_goseq()
 ```
 
----
-
 ## Reducing redundant GO terms
 
 Highly overlapping GO results can be summarized using:
@@ -342,8 +376,6 @@ reduce_go_terms()
 
 This provides a reusable redundancy-reduction step that can be applied
 independently of downstream visualization.
-
----
 
 ## Enrichment visualization
 
@@ -385,8 +417,6 @@ custom_RidgePlot()
 
 remains supported for older workflows.
 
----
-
 ## Neighborhood mixing
 
 Local mixing of cells from different samples or groups can be quantified using:
@@ -406,8 +436,6 @@ calculate_mixing_metric()
 ```
 
 remains available for reproducibility.
-
----
 
 ## Clustering-resolution assessment
 
@@ -453,8 +481,6 @@ plot_markers_UMAP()
 
 remains available.
 
----
-
 ## Marker summaries
 
 Multiple marker signals can be summarized using:
@@ -472,8 +498,6 @@ plot_ordered_violin()
 These functions are intended for reusable marker characterization without
 embedding project-specific marker definitions in the package.
 
----
-
 ## Cluster marker analysis
 
 Cluster-level marker analysis can be performed with:
@@ -485,8 +509,6 @@ analyze_cluster_markers()
 The function provides reusable analysis logic while allowing biological
 interpretation and project-specific marker selection to remain in the analysis
 repository.
-
----
 
 ## Pseudobulk differential expression
 
@@ -547,8 +569,6 @@ plot_pseudotime()
 ```
 
 remains available for reproducibility.
-
----
 
 ## Diffusion-space visualization
 
@@ -616,8 +636,8 @@ Some historical functions have clearer canonical replacements.
 
 | Historical interface | Recommended interface |
 | --- | --- |
-| `contraster()` | `make_deseq_contrast()` |
-| `apply_contrasts()` | `deseq_contrast()` |
+| `apply_contrasts()` | `deseq_contrast()` for standard factor comparisons |
+| `contraster()` | Legacy only; define complex contrasts explicitly with `DESeq2::results()` |
 | `read_edgeR_counts()` | `read_edger_counts()` |
 | `plot_transcript_dist()` | `plot_transcript_distribution()` |
 | `pca_plot()` | `plot_bulk_pca()` |
@@ -704,7 +724,8 @@ private sequencing datasets.
 
 Tests cover areas including:
 
-- DESeq2 contrast construction;
+- direct DESeq2 factor-contrast parity;
+- preservation of historical observed-profile contrast behavior;
 - expression-set comparison;
 - export utilities;
 - enrichment visualization;
